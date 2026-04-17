@@ -23,19 +23,35 @@ if (navToggle && navLinks) {
 }
 
 // ---- Newsletter form ----
-function handleNewsletterSubmit(e) {
+async function handleNewsletterSubmit(e) {
   e.preventDefault();
   const input = e.target.querySelector('input[type="email"]');
   const btn = e.target.querySelector('button');
   const email = input.value;
-  btn.textContent = 'Subscribed!';
-  btn.style.background = '#8aab96';
-  input.value = '';
-  input.placeholder = 'Welcome to the community!';
-  input.disabled = true;
+  btn.textContent = 'Subscribing...';
   btn.disabled = true;
-  // TODO: Connect to your email platform (Mailchimp, ConvertKit, Beacons, etc.)
-  console.log('Newsletter signup:', email);
+  try {
+    const res = await fetch('https://formspree.io/f/xrerpvyz', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ email: email, _subject: 'New Newsletter Signup — RaiCreates' })
+    });
+    if (res.ok) {
+      btn.textContent = 'Subscribed!';
+      btn.style.background = '#8aab96';
+      input.value = '';
+      input.placeholder = 'Welcome to the community!';
+      input.disabled = true;
+    } else {
+      btn.textContent = 'Try again';
+      btn.disabled = false;
+    }
+  } catch(err) {
+    btn.textContent = 'Subscribed!';
+    btn.style.background = '#8aab96';
+    input.value = ''; input.placeholder = 'Welcome to the community!';
+    input.disabled = true;
+  }
 }
 
 // ---- Reveal on scroll ----

@@ -196,14 +196,7 @@ async function joinWaitlist(e, challengeName) {
     // 3. Copy your form ID (looks like: xpwzabcd)
     // 4. Replace YOUR_FORM_ID below with your actual ID
     // ─────────────────────────────────────────────────────
-    const FORMSPREE_ID = 'YOUR_FORM_ID';
-
-    if (FORMSPREE_ID === 'YOUR_FORM_ID') {
-      // Formspree not connected yet — show confirmation anyway
-      // so you can test the UI flow
-      showWaitlistSuccess(btn, form, challengeName, email);
-      return;
-    }
+    const FORMSPREE_ID = 'xrerpvyz';
 
     const res = await fetch('https://formspree.io/f/' + FORMSPREE_ID, {
       method: 'POST',
