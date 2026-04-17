@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Art Gallery | RaiCreates</title>
+  <meta name="description" content="Browse and purchase original art from Rai and our creative community. View the collection in our immersive VR gallery." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&family=Playfair+Display:ital,wght@1,400&display=swap" rel="stylesheet" />
+  <script src="https://js.stripe.com/v3/"></script>
+  <!-- A-Frame for VR -->
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <link rel="stylesheet" href="../css/main.css" />
+  <link rel="stylesheet" href="../css/gallery.css" />
+  <style>
+    .vr-room-selector { display:flex; gap:0.5rem; flex-wrap:wrap; }
+    .vr-room-btn { background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); color:#b0a89e; border-radius:100px; padding:0.4rem 1rem; font-family:sans-serif; font-size:0.78rem; cursor:pointer; transition:all 0.25s; }
+    .vr-room-btn:hover { border-color:rgba(255,255,255,0.25); color:#f5efe6; }
+    .vr-room-btn.active { background:#c9a96e; color:#0d0d0d; border-color:#c9a96e; font-weight:600; }
+  </style>
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <a href="../index.html" class="nav-logo">
+    <svg width="36" height="36" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="18" r="17" stroke="var(--gold)" stroke-width="1.5"/><path d="M10 24 Q18 8 26 24" stroke="var(--gold)" stroke-width="1.5" fill="none"/><circle cx="18" cy="14" r="3" fill="var(--gold)" opacity="0.7"/></svg>
+    <span>RaiCreates</span>
+  </a>
+  <button class="nav-toggle" id="navToggle"><span></span><span></span><span></span></button>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="../index.html">Home</a></li>
+    <li><a href="coaching.html">Coaching</a></li>
+    <li><a href="experiences.html">Experiences</a></li>
+    <li><a href="gallery.html" class="active">Gallery</a></li>
+    <li><a href="quiz.html">Free Quiz</a></li>
+    <li><a href="challenges.html">Challenges</a></li>
+    <li><a href="shop.html" class="nav-cta">Shop</a></li>
+  </ul>
+</nav>
+
+<!-- ======== GALLERY HERO ======== -->
+<section class="page-hero">
+  <div class="page-hero-content">
+    <p class="section-eyebrow">The Gallery</p>
+    <h1 class="section-title">Art made from <em>feeling.</em></h1>
+    <p style="color:var(--text-muted); max-width:520px; margin: 1rem auto 2rem; font-size:1.05rem;">Original works from Rai and our community. Each piece carries a story. View in 2D or step inside our VR gallery for a fully immersive experience.</p>
+    <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;">
+      <button class="btn btn-primary" onclick="openVR('encouragement')">Enter VR Gallery</button>
+      <a href="showroom.html" class="btn btn-ghost">Online Gallery</a>
+    </div>
+  </div>
+</section>
+
+<!-- ======== FILTER TABS ======== -->
+<div class="gallery-controls">
+  <div class="container">
+    <div class="gallery-tabs">
+      <button class="gtab active" onclick="filterGallery('all')">All Works</button>
+      <button class="gtab" onclick="filterGallery('rai')">By Rai</button>
+      <button class="gtab" onclick="filterGallery('community')">Community Art</button>
+      <button class="gtab" onclick="filterGallery('available')">Available</button>
+      <button class="gtab" onclick="filterGallery('sold')">Sold</button>
+    </div>
+    <div class="gallery-sort">
+      <select class="gallery-select" onchange="sortGallery(this.value)">
+        <option value="newest">Newest First</option>
+        <option value="price-low">Price: Low to High</option>
+        <option value="price-high">Price: High to Low</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<!-- ======== GALLERY GRID ======== -->
+<section class="gallery-section">
+  <div class="container">
+    <div class="gallery-grid" id="galleryGrid">
+
+      <!-- Artwork cards — add your real images to /images/ and update src -->
+      <div class="art-card" data-category="rai" data-price="450" data-status="available">
+        <div class="art-img-wrap">
+          <div class="art-placeholder" style="background: linear-gradient(135deg,#2a1f0e,#c9a96e33);">
+            <svg viewBox="0 0 80 80" fill="none" width="48"><path d="M10 60L30 25l15 22 12-15L68 60H10z" stroke="#c9a96e" stroke-width="1.2" fill="none"/><circle cx="55" cy="20" r="7" stroke="#c9a96e" stroke-width="1.2"/></svg>
+          </div>
+          <div class="art-overlay">
+            <button class="btn btn-sm btn-primary" onclick="openArtwork('artwork-1')">View Details</button>
+            <button class="btn btn-sm btn-ghost" onclick="addToCart('artwork-1', 450)">Add to Cart</button>
+          </div>
+        </div>
+        <div class="art-info">
+          <div class="art-meta">
+            <span class="art-creator">Rai</span>
+            <span class="art-badge available">Available</span>
+          </div>
+          <h3 class="art-title">Golden Hour, Interior</h3>
+          <p class="art-dims">Acrylic on canvas &bull; 24&times;30 in</p>
+          <p class="art-price">$450</p>
+        </div>
+      </div>
+
+      <div class="art-card" data-category="rai" data-price="1200" data-status="available">
+        <div class="art-img-wrap">
+          <img src="../images/gallery/grateful-sight.jpg" alt="Grateful Sight by Mia" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+          <div class="art-placeholder" style="background: linear-gradient(135deg,#0a1828,#6a90cc44); display:none;">
+            <svg viewBox="0 0 80 80" fill="none" width="48"><circle cx="40" cy="40" r="25" stroke="#6a90cc" stroke-width="1.2"/><path d="M20 40 Q30 25 40 40 Q50 55 60 40" stroke="#6a90cc" stroke-width="1.2" fill="none"/></svg>
+          </div>
+          <div class="art-overlay">
+            <button class="btn btn-sm btn-primary" onclick="openArtwork('artwork-2')">View Details</button>
+            <button class="btn btn-sm btn-ghost" onclick="addToCart('artwork-2', 1200)">Add to Cart</button>
+          </div>
+        </div>
+        <div class="art-info">
+          <div class="art-meta">
+            <span class="art-creator">Mia</span>
+            <span class="art-badge available">Available</span>
+          </div>
+          <h3 class="art-title">Grateful Sight</h3>
+          <p class="art-dims">Acrylic on canvas &bull; 16&times;24 in</p>
+          <p class="art-price">$1,200</p>
+        </div>
+      </div>
+
+      <div class="art-card" data-category="rai" data-price="320" data-status="sold">
+        <div class="art-img-wrap">
+          <div class="art-placeholder" style="background: linear-gradient(135deg,#1a0e0e,#e0756033);">
+            <svg viewBox="0 0 80 80" fill="none" width="48"><rect x="15" y="15" width="50" height="50" rx="4" stroke="#e07560" stroke-width="1.2" fill="none"/><path d="M15 40h50M40 15v50" stroke="#e07560" stroke-width="0.8" stroke-dasharray="3 3"/></svg>
+          </div>
+          <div class="art-overlay">
+            <button class="btn btn-sm btn-primary" onclick="openArtwork('artwork-3')">View Details</button>
+          </div>
+          <div class="art-sold-badge">Sold</div>
+        </div>
+        <div class="art-info">
+          <div class="art-meta">
+            <span class="art-creator">Rai</span>
+            <span class="art-badge sold">Sold</span>
+          </div>
+          <h3 class="art-title">The Reset</h3>
+          <p class="art-dims">Mixed media &bull; 18&times;24 in</p>
+          <p class="art-price" style="color:var(--text-faint);">$320</p>
+        </div>
+      </div>
+
+      <div class="art-card" data-category="community" data-price="95" data-status="available">
+        <div class="art-img-wrap">
+          <div class="art-placeholder" style="background: linear-gradient(135deg,#111820,#c9a96e22);">
+            <svg viewBox="0 0 80 80" fill="none" width="48"><path d="M20 65 C20 40 35 15 40 15 C45 15 60 40 60 65" stroke="#c9a96e" stroke-width="1.2" fill="none"/><circle cx="40" cy="30" r="8" stroke="#c9a96e" stroke-width="1"/></svg>
+          </div>
+          <div class="art-overlay">
+            <button class="btn btn-sm btn-primary" onclick="openArtwork('artwork-4')">View Details</button>
+            <button class="btn btn-sm btn-ghost" onclick="addToCart('artwork-4', 95)">Add to Cart</button>
+          </div>
+        </div>
+        <div class="art-info">
+          <div class="art-meta">
+            <span class="art-creator">Tamara R.</span>
+            <span class="art-badge available">Available</span>
+          </div>
+          <h3 class="art-title">Rooted</h3>
+          <p class="art-dims">Ink on paper &bull; 9&times;12 in</p>
+          <p class="art-price">$95</p>
+        </div>
+      </div>
+
+      <div class="art-card" data-category="rai" data-price="600" data-status="available">
+        <div class="art-img-wrap">
+          <div class="art-placeholder" style="background: linear-gradient(135deg,#0e180e,#8aab9644);">
+            <svg viewBox="0 0 80 80" fill="none" width="48"><ellipse cx="40" cy="40" rx="28" ry="20" stroke="#8aab96" stroke-width="1.2" fill="none"/><ellipse cx="40" cy="40" rx="14" ry="10" stroke="#8aab96" stroke-width="0.8" fill="none"/><circle cx="40" cy="40" r="4" fill="#8aab96" opacity="0.5"/></svg>
+          </div>
+          <div class="art-overlay">
+            <button class="btn btn-sm btn-primary" onclick="openArtwork('artwork-5')">View Details</button>
+            <button class="btn btn-sm btn-ghost" onclick="addToCart('artwork-5', 600)">Add to Cart</button>
+          </div>
+        </div>
+        <div class="art-info">
+          <div class="art-meta">
+            <span class="art-creator">Rai</span>
+            <span class="art-badge available">Available</span>
+          </div>
+          <h3 class="art-title">Orbit & Grace</h3>
+          <p class="art-dims">Acrylic &bull; 30&times;30 in</p>
+          <p class="art-price">$600</p>
+        </div>
+      </div>
+
+      <div class="art-card" data-category="community" data-price="145" data-status="available">
+        <div class="art-img-wrap">
+          <div class="art-placeholder" style="background: linear-gradient(135deg,#180e18,#e0756033);">
+            <svg viewBox="0 0 80 80" fill="none" width="48"><path d="M15 50 Q25 20 40 35 Q55 50 65 20" stroke="#e07560" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M10 65h60" stroke="#e07560" stroke-width="0.8" opacity="0.5"/></svg>
+          </div>
+          <div class="art-overlay">
+            <button class="btn btn-sm btn-primary" onclick="openArtwork('artwork-6')">View Details</button>
+            <button class="btn btn-sm btn-ghost" onclick="addToCart('artwork-6', 145)">Add to Cart</button>
+          </div>
+        </div>
+        <div class="art-info">
+          <div class="art-meta">
+            <span class="art-creator">Aisha K.</span>
+            <span class="art-badge available">Available</span>
+          </div>
+          <h3 class="art-title">Unwind</h3>
+          <p class="art-dims">Gouache &bull; 11&times;14 in</p>
+          <p class="art-price">$145</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ======== VR GALLERY MODAL ======== -->
+<div class="vr-modal" id="vrModal">
+  <div class="vr-modal-header">
+    <div>
+      <h2>Virtual Gallery</h2>
+      <p>Look around with mouse or touch. Click any artwork to purchase. Walk with W/A/S/D keys.</p>
+    </div>
+    <div class="vr-room-selector">
+      <button class="vr-room-btn active" data-room="encouragement" onclick="switchRoom('encouragement')">Room 1: Encouragement</button>
+      <button class="vr-room-btn" data-room="grounded" onclick="switchRoom('grounded')">Room 2: Grounded</button>
+      <button class="vr-room-btn" data-room="luxury" onclick="switchRoom('luxury')">Room 3: Luxury</button>
+    </div>
+    <button class="vr-close" onclick="closeVR()">Close &times;</button>
+  </div>
+  <div class="vr-container" id="vrContainer">
+    <!-- A-Frame VR Scene is injected here on open to avoid loading it upfront -->
+  </div>
+</div>
+<div class="vr-backdrop" id="vrBackdrop" onclick="closeVR()"></div>
+
+<!-- ======== ARTWORK DETAIL MODAL ======== -->
+<div class="artwork-modal" id="artworkModal">
+  <div class="artwork-modal-inner">
+    <button class="artwork-close" onclick="closeArtwork()">&times;</button>
+    <div class="artwork-modal-img">
+      <div class="art-placeholder art-placeholder-lg" id="modalImg"></div>
+    </div>
+    <div class="artwork-modal-info" id="modalInfo">
+      <!-- Filled by JS -->
+    </div>
+  </div>
+</div>
+<div class="artwork-backdrop" id="artworkBackdrop" onclick="closeArtwork()"></div>
+
+<!-- ======== CART TOAST ======== -->
+<div class="cart-toast" id="cartToast">
+  <svg viewBox="0 0 24 24" fill="none" width="18"><path d="M5 13l4 4L19 7" stroke="#8aab96" stroke-width="2" stroke-linecap="round"/></svg>
+  Added to cart!
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-bottom" style="border-top:1px solid var(--border); padding-top:2rem; margin-top:0;">
+      <p>&copy; 2025 RaiCreates. All rights reserved.</p>
+      <div class="footer-legal">
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="../js/main.js"></script>
+<script src="../js/gallery.js"></script>
+</body>
+</html>
