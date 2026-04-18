@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Online Gallery | RaiCreates</title>
+  <meta name="description" content="Step inside the RaiCreates gallery showroom. Browse original artworks and purchase directly." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --gold: #c9a96e; --cream: #f5efe6; --dark: #141414;
+      --text-muted: #c8bfb4; --text-faint: #9e9589;
+      --font-display: "Cormorant Garamond", Georgia, serif;
+      --font-body: "DM Sans", sans-serif;
+    }
+    html, body { width:100%; height:100%; overflow:hidden; background:#2a2820; }
+    #showroom-canvas { display:block; width:100%; height:100%; }
+
+    .s-nav {
+      position:fixed; top:0; left:0; right:0; height:58px;
+      display:flex; align-items:center; justify-content:space-between; padding:0 2rem;
+      background:linear-gradient(to bottom, rgba(30,25,18,0.96) 70%, transparent);
+      z-index:100; pointer-events:none;
+    }
+    .s-nav > * { pointer-events:all; }
+    .s-logo { display:flex; align-items:center; gap:8px; font-family:var(--font-display); font-size:1.2rem; color:var(--cream); text-decoration:none; }
+    .s-nav-right { display:flex; gap:0.6rem; align-items:center; }
+    .s-btn {
+      background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.18);
+      color:var(--cream); border-radius:100px; padding:0.42rem 1rem;
+      font-family:var(--font-body); font-size:0.78rem; cursor:pointer;
+      transition:all 0.22s; text-decoration:none; display:inline-flex; align-items:center; gap:5px;
+    }
+    .s-btn:hover { background:rgba(255,255,255,0.15); }
+
+    .gallery-label {
+      position:fixed; top:65px; left:50%; transform:translateX(-50%);
+      font-family:var(--font-body); font-size:0.62rem; letter-spacing:0.2em;
+      text-transform:uppercase; color:var(--gold); z-index:100;
+      background:rgba(20,16,10,0.75); padding:0.28rem 1rem; border-radius:100px;
+      border:1px solid rgba(201,169,110,0.28); white-space:nowrap;
+    }
+
+    .crosshair {
+      position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+      width:16px; height:16px; pointer-events:none; z-index:50; opacity:0.35; transition:all 0.15s;
+    }
+    .crosshair::before, .crosshair::after { content:""; position:absolute; background:rgba(100,80,50,0.7); }
+    .crosshair::before { width:1px; height:100%; left:50%; }
+    .crosshair::after  { width:100%; height:1px; top:50%; }
+    .crosshair.hover::before, .crosshair.hover::after { background:var(--gold); }
+    .crosshair.hover { opacity:1; transform:translate(-50%,-50%) scale(1.3); }
+
+    .controls-hint {
+      position:fixed; bottom:1.5rem; left:50%; transform:translateX(-50%);
+      display:flex; gap:1.25rem;
+      background:rgba(20,16,10,0.82); border:1px solid rgba(255,255,255,0.1);
+      border-radius:100px; padding:0.55rem 1.4rem;
+      backdrop-filter:blur(12px); z-index:100; transition:opacity 0.6s;
+    }
+    .controls-hint.hidden { opacity:0; pointer-events:none; }
+    .controls-hint span { font-size:0.68rem; color:var(--text-faint); display:flex; align-items:center; gap:4px; }
+    .key { background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.18); border-radius:4px; padding:1px 6px; font-size:0.64rem; color:var(--cream); }
+
+    /* Art panel */
+    .art-panel {
+      position:fixed; right:0; top:0; bottom:0; width:370px; max-width:92vw;
+      background:rgba(248,244,236,0.98);
+      border-left:1px solid rgba(180,160,120,0.3);
+      z-index:200; transform:translateX(100%);
+      transition:transform 0.42s cubic-bezier(0.4,0,0.2,1);
+      display:flex; flex-direction:column; overflow-y:auto;
+      color:#1a1510;
+    }
+    .art-panel.open { transform:translateX(0); }
+    .art-panel-img { width:100%; aspect-ratio:4/3; overflow:hidden; flex-shrink:0; background:#e8e0d0; position:relative; }
+    .art-panel-img img { width:100%; height:100%; object-fit:cover; display:block; }
+    .art-panel-img canvas { width:100%; height:100%; display:block; }
+    .art-panel-body { padding:1.6rem 1.75rem 2.5rem; flex:1; }
+    .panel-eyebrow { font-family:var(--font-body); font-size:0.62rem; letter-spacing:0.18em; text-transform:uppercase; color:#a08040; margin-bottom:0.5rem; }
+    .panel-title { font-family:var(--font-display); font-size:1.8rem; font-weight:300; color:#1a1510; line-height:1.15; margin-bottom:0.25rem; }
+    .panel-by { font-family:var(--font-body); font-size:0.78rem; color:#8a7a60; margin-bottom:1.1rem; }
+    .panel-desc { font-family:var(--font-body); font-size:0.85rem; color:#4a4030; line-height:1.8; margin-bottom:1.3rem; }
+    .panel-meta { display:grid; grid-template-columns:1fr 1fr; gap:0.8rem; margin-bottom:1.3rem; padding:1rem; background:rgba(180,155,100,0.08); border-radius:8px; border:1px solid rgba(180,155,100,0.15); }
+    .panel-meta-item label { display:block; font-family:var(--font-body); font-size:0.6rem; text-transform:uppercase; letter-spacing:0.1em; color:#8a7a60; margin-bottom:3px; }
+    .panel-meta-item span { font-family:var(--font-body); font-size:0.85rem; color:#1a1510; }
+    .panel-price { font-family:var(--font-display); font-size:2.2rem; font-weight:300; color:#8a5c1a; margin-bottom:1.1rem; }
+    .panel-actions { display:flex; flex-direction:column; gap:0.55rem; }
+    .btn-purchase { background:#8a5c1a; color:#fff8ee; border:none; border-radius:100px; padding:0.85rem 1.4rem; font-family:var(--font-body); font-size:0.88rem; font-weight:600; cursor:pointer; transition:all 0.22s; }
+    .btn-purchase:hover { background:#a06e2a; transform:translateY(-1px); box-shadow:0 4px 16px rgba(138,92,26,0.25); }
+    .btn-cart { background:transparent; color:#1a1510; border:1px solid rgba(100,80,50,0.3); border-radius:100px; padding:0.85rem 1.4rem; font-family:var(--font-body); font-size:0.88rem; cursor:pointer; transition:all 0.22s; }
+    .btn-cart:hover { border-color:#8a5c1a; color:#8a5c1a; }
+    .sold-tag { background:rgba(100,80,50,0.06); border:1px solid rgba(100,80,50,0.15); border-radius:8px; padding:1rem; text-align:center; font-family:var(--font-body); font-size:0.83rem; color:#8a7a60; }
+    .sold-tag a { color:#8a5c1a; }
+    .panel-close { position:absolute; top:10px; right:10px; width:28px; height:28px; border-radius:50%; background:rgba(0,0,0,0.12); border:none; color:#1a1510; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:0.95rem; z-index:10; transition:background 0.2s; }
+    .panel-close:hover { background:rgba(0,0,0,0.22); }
+
+    /* Loader */
+    .loader { position:fixed; inset:0; background:#f0ebe0; display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:999; transition:opacity 0.8s; }
+    .loader.hidden { opacity:0; pointer-events:none; }
+    .loader-title { font-family:var(--font-display); font-size:2.2rem; color:#1a1510; margin-bottom:0.25rem; }
+    .loader-sub { font-size:0.62rem; letter-spacing:0.2em; text-transform:uppercase; color:#a08040; margin-bottom:2rem; }
+    .loader-bar-bg { width:180px; height:1px; background:rgba(0,0,0,0.1); border-radius:100px; }
+    .loader-bar { height:100%; background:#a08040; border-radius:100px; width:0; transition:width 0.15s; }
+    .loader-msg { font-size:0.68rem; letter-spacing:0.12em; text-transform:uppercase; color:#8a7a60; margin-top:1rem; }
+
+    /* Cart toast */
+    .cart-toast { position:fixed; bottom:5rem; left:50%; transform:translateX(-50%) translateY(50px); opacity:0; background:#1a1510; border:1px solid rgba(138,92,26,0.4); border-radius:12px; padding:0.8rem 1.4rem; font-family:var(--font-body); font-size:0.85rem; color:#f5efe6; display:flex; align-items:center; gap:0.55rem; z-index:300; transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1); white-space:nowrap; }
+    .cart-toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
+
+    @media(max-width:600px) {
+      .art-panel { width:100%; border-left:none; border-top:1px solid rgba(180,155,100,0.3); top:auto; height:72vh; transform:translateY(100%); }
+      .art-panel.open { transform:translateY(0); }
+      .controls-hint { display:none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="loader" id="loader">
+  <div class="loader-title">RaiCreates</div>
+  <div class="loader-sub">Online Gallery</div>
+  <div class="loader-bar-bg"><div class="loader-bar" id="loaderBar"></div></div>
+  <div class="loader-msg" id="loaderMsg">Preparing the gallery...</div>
+</div>
+
+<nav class="s-nav">
+  <a href="gallery.html" class="s-logo">
+    <svg width="22" height="22" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="18" r="17" stroke="#c9a96e" stroke-width="1.5"/><path d="M10 24 Q18 8 26 24" stroke="#c9a96e" stroke-width="1.5" fill="none"/><circle cx="18" cy="14" r="3" fill="#c9a96e" opacity="0.7"/></svg>
+    RaiCreates
+  </a>
+  <div class="s-nav-right">
+    <button class="s-btn" id="exploreBtn" onclick="togglePointerLock()">&#9671; Free Explore</button>
+    <a href="gallery.html" class="s-btn">&#8592; Back to Gallery</a>
+  </div>
+</nav>
+
+<div class="gallery-label">Online Gallery &nbsp;·&nbsp; Click any artwork to view &amp; purchase</div>
+<div class="crosshair" id="crosshair"></div>
+
+<div class="controls-hint" id="controlsHint">
+  <span><span class="key">W</span><span class="key">A</span><span class="key">S</span><span class="key">D</span>&nbsp;Move</span>
+  <span><span class="key">Mouse drag</span>&nbsp;Look</span>
+  <span><span class="key">Click</span>&nbsp;Select artwork</span>
+</div>
+
+<canvas id="showroom-canvas"></canvas>
+
+<div class="art-panel" id="artPanel">
+  <button class="panel-close" onclick="closeArtPanel()">&#215;</button>
+  <div class="art-panel-img" id="panelImg"></div>
+  <div class="art-panel-body" id="panelBody"></div>
+</div>
+
+<div class="cart-toast" id="cartToast">
+  <svg viewBox="0 0 20 20" fill="none" width="14"><path d="M4 10l4 4 8-8" stroke="#8aab96" stroke-width="1.8" stroke-linecap="round"/></svg>
+  <span id="cartToastText">Added to cart!</span>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// ═══════════════════════════════════════
+// ARTWORK DATA
+// To add real images:
+//   1. Place your jpg/png files in raicreates/images/gallery/
+//   2. Set the "image" field below, e.g.:
+//      image: "../images/gallery/golden-hour.jpg"
+//   Leave image: null to use the abstract preview
+// ═══════════════════════════════════════
+const ARTWORKS = [
+  { id:"aw1",  title:"Golden Bond", creator:"Mia", medium:"Prismacolor pencil on brown paper", dims:"9×12 in", year:"2024", price:950,  status:"available", image:"../images/gallery/golden-bond.jpg", colors:[0xd4935a,0xc8903a,0x6a3a10], desc:"A richly detailed work in Prismacolor pencil on high quality brown paper. The warm earth tones of the paper become part of the piece itself, grounding the composition in natural warmth and texture.", stripeLink:"https://buy.stripe.com/YOUR_LINK_1" },
+  { id:"aw2",  title:"Grateful Sight", creator:"Mia", medium:"Acrylic on canvas", dims:"16×24 in", year:"2024", price:1200, status:"available", image:"../images/gallery/grateful-sight.jpg", colors:[0x6a90cc,0x90b8e8,0x0a1828], desc:"A luminous acrylic on canvas exploring the beauty found when we slow down and truly see. Layers of color build a scene that rewards time spent with it.", stripeLink:"https://buy.stripe.com/YOUR_LINK_2" },
+  { id:"aw3",  title:"The Reset",             creator:"Mia", medium:"Mixed media",           dims:"24×32 in", year:"2023", price:780,  status:"available", image:null, colors:[0x9a40aa,0xcc88cc,0x1a0520], desc:"The piece that started RaiCreates. Deep jewel tones over black gesso. Raw, intentional, and completely unrepeatable.",             stripeLink:"https://buy.stripe.com/YOUR_LINK_3" },
+  { id:"aw4",  title:"Sovereign",             creator:"Mia", medium:"Oil on canvas",         dims:"20×30 in", year:"2024", price:1500, status:"available", image:null, colors:[0xc9a96e,0xf0d890,0x100a00], desc:"Twelve layers of oil paint over six weeks. Deep navy, midnight black, and 24-karat gold detail. Certificate of authenticity included.", stripeLink:"https://buy.stripe.com/YOUR_LINK_4" },
+  { id:"aw5",  title:"She Believed",          creator:"Mia", medium:"Acrylic & gold leaf",   dims:"20×20 in", year:"2024", price:520,  status:"available", image:null, colors:[0xd4a050,0xf8e090,0x200e00], desc:"Gold leaf over raw acrylic. The moment self-doubt gives way to quiet certainty. One of Mia's personal favorites.",                      stripeLink:"https://buy.stripe.com/YOUR_LINK_5" },
+  { id:"aw6",  title:"Rooted",                creator:"Mia", medium:"Ink on paper",          dims:"16×20 in", year:"2024", price:320,  status:"available", image:null, colors:[0x5a9a6a,0x90c890,0x081408], desc:"An exploration of rootedness, the invisible systems beneath us that hold everything up. Drawn in one continuous session, eyes half-closed.", stripeLink:"https://buy.stripe.com/YOUR_LINK_6" },
+  { id:"aw7",  title:"Still Water",           creator:"Jessica M.", medium:"Watercolor",     dims:"12×16 in", year:"2024", price:180,  status:"available", image:null, colors:[0x4a8090,0x80c0cc,0x041018], desc:"Painted after a morning meditation practice. Captures the quality of stillness that comes when you stop trying to control everything.",  stripeLink:"https://buy.stripe.com/YOUR_LINK_7" },
+  { id:"aw8",  title:"Rise Anyway",           creator:"Tamara R.", medium:"Mixed media",     dims:"18×24 in", year:"2024", price:280,  status:"available", image:null, colors:[0xe06040,0xf09040,0x200800], desc:"Created during The Reset Immersion after a personal setback. The upward brushstrokes are intentional, deliberate, defiant.",              stripeLink:"https://buy.stripe.com/YOUR_LINK_8" }
+];
+
+// ═══════════════════════════════════════
+// THREE.JS INIT
+// ═══════════════════════════════════════
+const canvas = document.getElementById("showroom-canvas");
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.1;
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 80);
+camera.position.set(0, 1.65, 7.5);
+
+// Warm grey fog matching gallery walls
+scene.fog = new THREE.Fog(0x8a8278, 18, 35);
+scene.background = new THREE.Color(0x7a756c);
+
+const raycaster = new THREE.Raycaster();
+const pointer = new THREE.Vector2();
+let hitMeshes = [];
+let yaw = 0, pitch = 0;
+let keys = {};
+let isLocked = false;
+let isDragging = false, lastMX = 0, lastMY = 0;
+let previewCanvases = {};
+
+// ═══════════════════════════════════════
+// FALLBACK TEXTURE GENERATOR
+// ═══════════════════════════════════════
+function makeFallbackTexture(art) {
+  const w = 512, h = 640;
+  const c = document.createElement("canvas");
+  c.width = w; c.height = h;
+  const ctx = c.getContext("2d");
+  const [c1, c2, c3] = art.colors.map(n => "#" + n.toString(16).padStart(6,"0"));
+
+  // Warm linen background
+  const bg = ctx.createLinearGradient(0, 0, w, h);
+  bg.addColorStop(0, "#f0e8d8");
+  bg.addColorStop(1, "#e0d4c0");
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, w, h);
+
+  // Colour washes
+  ctx.globalAlpha = 0.55;
+  const g1 = ctx.createRadialGradient(w*0.3, h*0.35, 0, w*0.5, h*0.4, w*0.55);
+  g1.addColorStop(0, c1); g1.addColorStop(1, "transparent");
+  ctx.fillStyle = g1; ctx.fillRect(0, 0, w, h);
+
+  ctx.globalAlpha = 0.4;
+  const g2 = ctx.createRadialGradient(w*0.7, h*0.6, 0, w*0.6, h*0.55, w*0.4);
+  g2.addColorStop(0, c2); g2.addColorStop(1, "transparent");
+  ctx.fillStyle = g2; ctx.fillRect(0, 0, w, h);
+
+  // Brushstrokes
+  ctx.globalAlpha = 0.28;
+  for (let i = 0; i < 8; i++) {
+    ctx.beginPath();
+    ctx.moveTo(Math.random()*w, Math.random()*h);
+    ctx.bezierCurveTo(Math.random()*w, Math.random()*h, Math.random()*w, Math.random()*h, Math.random()*w, Math.random()*h);
+    ctx.lineWidth = 6 + Math.random()*18;
+    ctx.strokeStyle = i%2===0 ? c1 : c2;
+    ctx.lineCap = "round"; ctx.stroke();
+  }
+
+  // Subtle texture
+  ctx.globalAlpha = 0.03;
+  for (let y = 0; y < h; y += 3) {
+    for (let x = 0; x < w; x += 3) {
+      if (Math.random() > 0.6) { ctx.fillStyle="#000"; ctx.fillRect(x,y,1,1); }
+    }
+  }
+
+  ctx.globalAlpha = 1;
+  previewCanvases[art.id] = c;
+  return new THREE.CanvasTexture(c);
+}
+
+// ═══════════════════════════════════════
+// BUILD GALLERY ROOM
+// Inspired by: warm grey walls, white
+// crown molding, light hardwood floor,
+// recessed spotlights, mixed frame sizes,
+// central bench, lounge chair
+// ═══════════════════════════════════════
+function buildRoom() {
+  const W = 22, H = 5.2, D = 20;
+  const WALL = 0x8e8880;    // warm grey walls
+  const TRIM = 0xf0ece4;    // white/cream trim
+  const FLOOR_A = 0xc8a870; // light hardwood
+  const FLOOR_B = 0xb89860;
+
+  // ── Lights ──
+  // Ambient — warm natural gallery light
+  scene.add(new THREE.AmbientLight(0xfff5e0, 0.9));
+
+  // Main overhead warm white
+  const main = new THREE.PointLight(0xfff8e8, 1.6, 40);
+  main.position.set(0, H-0.3, -3); main.castShadow = true;
+  main.shadow.mapSize.set(2048,2048); scene.add(main);
+
+  // Recessed spotlights (tray ceiling)
+  [[-7,-2],[-3.5,-2],[0,-2],[3.5,-2],[7,-2],
+   [-5.5,-5],[0,-5],[5.5,-5]].forEach(([x,z]) => {
+    const spot = new THREE.SpotLight(0xfff5dd, 2.2, 12, Math.PI/9, 0.35, 1.5);
+    spot.position.set(x, H-0.15, z);
+    spot.target.position.set(x, 0, z);
+    spot.castShadow = true; scene.add(spot); scene.add(spot.target);
+    // Housing disc
+    const hGeo = new THREE.CylinderGeometry(0.09,0.07,0.06,12);
+    const hMat = new THREE.MeshStandardMaterial({color:0xddd8cc,roughness:0.3,metalness:0.5});
+    const h = new THREE.Mesh(hGeo,hMat); h.position.set(x,H-0.08,z); scene.add(h);
+  });
+
+  // ── Floor — light hardwood planks ──
+  const floorGeo = new THREE.PlaneGeometry(W, D, 22, 20);
+  // Vertex-color wood grain effect
+  const fColors = [];
+  const fPos = floorGeo.attributes.position;
+  for (let i = 0; i < fPos.count; i++) {
+    const x = fPos.getX(i);
+    const stripe = Math.floor((x + W/2) * 2.5) % 2;
+    const r = stripe === 0 ? 0.80 : 0.75;
+    const g = stripe === 0 ? 0.67 : 0.62;
+    const b = stripe === 0 ? 0.44 : 0.39;
+    fColors.push(r, g, b);
+  }
+  floorGeo.setAttribute("color", new THREE.BufferAttribute(new Float32Array(fColors), 3));
+  const floorMat = new THREE.MeshStandardMaterial({ vertexColors:true, roughness:0.55, metalness:0.08 });
+  const floor = new THREE.Mesh(floorGeo, floorMat);
+  floor.rotation.x = -Math.PI/2; floor.receiveShadow = true; scene.add(floor);
+
+  // ── Ceiling ──
+  // Tray ceiling: outer flat, inner recessed
+  const ceilOuter = new THREE.Mesh(
+    new THREE.PlaneGeometry(W, D),
+    new THREE.MeshStandardMaterial({color:0xf4f0e8, roughness:1})
+  );
+  ceilOuter.rotation.x = Math.PI/2; ceilOuter.position.y = H; scene.add(ceilOuter);
+  // Tray inset
+  const trayGeo = new THREE.PlaneGeometry(W-2, D-3);
+  const trayMat = new THREE.MeshStandardMaterial({color:0xece8e0, roughness:1});
+  const tray = new THREE.Mesh(trayGeo, trayMat);
+  tray.rotation.x = Math.PI/2; tray.position.set(0, H-0.18, -1); scene.add(tray);
+  // Tray edge molding
+  [[W-2, 0.18, 0.06], [W-2, 0.18, 0.06]].forEach(() => {});
+  const trayEdgeMat = new THREE.MeshStandardMaterial({color:0xf0ece4, roughness:0.8});
+  [
+    [new THREE.BoxGeometry(W-2, 0.18, 0.05), [0, H-0.09, -D/2+1.5+0.025]],
+    [new THREE.BoxGeometry(W-2, 0.18, 0.05), [0, H-0.09, D/2-1.5-0.025]],
+    [new THREE.BoxGeometry(0.05, 0.18, D-3),  [-W/2+1+0.025, H-0.09, -1]],
+    [new THREE.BoxGeometry(0.05, 0.18, D-3),  [ W/2-1-0.025, H-0.09, -1]],
+  ].forEach(([geo,pos]) => {
+    const m = new THREE.Mesh(geo, trayEdgeMat); m.position.set(...pos); scene.add(m);
+  });
+
+  // ── Walls ──
+  const wallMat = new THREE.MeshStandardMaterial({color:WALL, roughness:0.92});
+  [
+    {size:[W,H], pos:[0,H/2,-D/2],         rot:[0,0,0]},
+    {size:[D,H], pos:[-W/2,H/2,-D/2+D/2],  rot:[0, Math.PI/2,0]},
+    {size:[D,H], pos:[ W/2,H/2,-D/2+D/2],  rot:[0,-Math.PI/2,0]},
+  ].forEach(w => {
+    const mesh = new THREE.Mesh(new THREE.PlaneGeometry(...w.size), wallMat.clone());
+    mesh.position.set(...w.pos); mesh.rotation.set(...w.rot); mesh.receiveShadow = true; scene.add(mesh);
+  });
+
+  // ── Crown molding (top) ──
+  const crownMat = new THREE.MeshStandardMaterial({color:TRIM, roughness:0.85});
+  [
+    // Back wall crown
+    [new THREE.BoxGeometry(W, 0.16, 0.12), [0, H-0.08, -D/2+0.06]],
+    // Left wall crown
+    [new THREE.BoxGeometry(0.12, 0.16, D), [-W/2+0.06, H-0.08, 0]],
+    // Right wall crown
+    [new THREE.BoxGeometry(0.12, 0.16, D), [ W/2-0.06, H-0.08, 0]],
+  ].forEach(([geo, pos]) => {
+    const m = new THREE.Mesh(geo, crownMat); m.position.set(...pos); scene.add(m);
+  });
+
+  // ── Baseboard (bottom) ──
+  [
+    [new THREE.BoxGeometry(W, 0.22, 0.05), [0, 0.11, -D/2+0.025]],
+    [new THREE.BoxGeometry(0.05, 0.22, D), [-W/2+0.025, 0.11, 0]],
+    [new THREE.BoxGeometry(0.05, 0.22, D), [ W/2-0.025, 0.11, 0]],
+  ].forEach(([geo, pos]) => {
+    const m = new THREE.Mesh(geo, crownMat); m.position.set(...pos); scene.add(m);
+  });
+
+  // ── Area rug (patterned) ──
+  const rugCanvas = document.createElement("canvas");
+  rugCanvas.width = 512; rugCanvas.height = 384;
+  const rCtx = rugCanvas.getContext("2d");
+  // Base
+  const rugGrad = rCtx.createLinearGradient(0,0,512,384);
+  rugGrad.addColorStop(0,"#8a6a40"); rugGrad.addColorStop(0.5,"#7a5c35"); rugGrad.addColorStop(1,"#8a6a40");
+  rCtx.fillStyle = rugGrad; rCtx.fillRect(0,0,512,384);
+  // Border
+  rCtx.strokeStyle="#c8a060"; rCtx.lineWidth=12; rCtx.strokeRect(16,12,480,360);
+  rCtx.strokeStyle="#e8c880"; rCtx.lineWidth=4; rCtx.strokeRect(24,20,464,344);
+  rCtx.strokeStyle="#c8a060"; rCtx.lineWidth=2; rCtx.strokeRect(32,28,448,328);
+  // Center medallion
+  rCtx.beginPath(); rCtx.arc(256,192,60,0,Math.PI*2);
+  rCtx.strokeStyle="#e0b860"; rCtx.lineWidth=3; rCtx.stroke();
+  rCtx.beginPath(); rCtx.arc(256,192,40,0,Math.PI*2);
+  rCtx.strokeStyle="#c8a060"; rCtx.lineWidth=2; rCtx.stroke();
+  // Pattern diamonds
+  rCtx.fillStyle="rgba(200,160,80,0.3)";
+  for(let y=50; y<330; y+=40) {
+    for(let x=50; x<460; x+=40) {
+      rCtx.save(); rCtx.translate(x,y); rCtx.rotate(Math.PI/4);
+      rCtx.fillRect(-6,-6,12,12); rCtx.restore();
+    }
+  }
+  const rugTex = new THREE.CanvasTexture(rugCanvas);
+  const rugGeo = new THREE.PlaneGeometry(8, 6);
+  const rugMeshMat = new THREE.MeshStandardMaterial({map:rugTex, roughness:0.85});
+  const rug = new THREE.Mesh(rugGeo, rugMeshMat);
+  rug.rotation.x = -Math.PI/2; rug.position.set(0, 0.005, 1.5); scene.add(rug);
+
+  // ── Central bench (upholstered ottoman) ──
+  const benchGroup = new THREE.Group();
+  // Cushion body
+  const cushGeo = new THREE.BoxGeometry(1.6, 0.28, 0.7);
+  const cushMat = new THREE.MeshStandardMaterial({color:0xf0ece4, roughness:0.9});
+  const cush = new THREE.Mesh(cushGeo, cushMat); cush.position.y = 0.46; cush.castShadow = true;
+  benchGroup.add(cush);
+  // Legs (4)
+  const legMat = new THREE.MeshStandardMaterial({color:0x3a2a14, roughness:0.5, metalness:0.1});
+  [[-0.65,0.19,-0.27],[0.65,0.19,-0.27],[-0.65,0.19,0.27],[0.65,0.19,0.27]].forEach(([x,y,z]) => {
+    const leg = new THREE.Mesh(new THREE.BoxGeometry(0.06,0.38,0.06), legMat);
+    leg.position.set(x,y,z); leg.castShadow = true; benchGroup.add(leg);
+  });
+  benchGroup.position.set(0, 0, 2.2); scene.add(benchGroup);
+
+  // ── Lounge chair (right corner) ──
+  const chairGroup = new THREE.Group();
+  const seatMat = new THREE.MeshStandardMaterial({color:0xd8c8aa, roughness:0.85});
+  const frameMat2 = new THREE.MeshStandardMaterial({color:0x3a2a14, roughness:0.4, metalness:0.15});
+  // Seat
+  const seat = new THREE.Mesh(new THREE.BoxGeometry(0.85,0.14,0.72), seatMat);
+  seat.position.y = 0.45; chairGroup.add(seat);
+  // Back
+  const back = new THREE.Mesh(new THREE.BoxGeometry(0.85,0.7,0.1), seatMat);
+  back.position.set(0,0.84,-0.31); back.rotation.x = 0.12; chairGroup.add(back);
+  // Arms
+  [-0.375,0.375].forEach(x => {
+    const arm = new THREE.Mesh(new THREE.BoxGeometry(0.1,0.1,0.7), seatMat);
+    arm.position.set(x,0.6,0); chairGroup.add(arm);
+  });
+  // Legs
+  [[-0.35,0.19,-0.28],[0.35,0.19,-0.28],[-0.35,0.19,0.28],[0.35,0.19,0.28]].forEach(([x,y,z]) => {
+    const leg = new THREE.Mesh(new THREE.BoxGeometry(0.05,0.38,0.05), frameMat2);
+    leg.position.set(x,y,z); chairGroup.add(leg);
+  });
+  chairGroup.position.set(6.5, 0, 0.5); chairGroup.rotation.y = -0.4; scene.add(chairGroup);
+
+  // Small side table next to chair
+  const tableGrp = new THREE.Group();
+  const tabTop = new THREE.Mesh(new THREE.CylinderGeometry(0.28,0.28,0.04,16), new THREE.MeshStandardMaterial({color:0x5a3a18,roughness:0.4,metalness:0.1}));
+  tabTop.position.y = 0.6; tableGrp.add(tabTop);
+  const tabLeg = new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.04,0.58,8), frameMat2);
+  tabLeg.position.y = 0.3; tableGrp.add(tabLeg);
+  tableGrp.position.set(7.2, 0, -0.5); scene.add(tableGrp);
+
+  // ── HANG PAINTINGS ──
+  // Layout matching inspiration: large pieces + gallery clusters
+  // Back wall: 1 large center + 2 medium flanking + side walls
+  const hangLayout = [
+    // Back wall — large center piece (portrait orientation)
+    { id:"aw1", x:0,    y:2.1,  z:-9.8, W:2.0, H:2.6, ry:0 },
+    // Back wall — medium left
+    { id:"aw2", x:-3.8, y:2.0,  z:-9.8, W:1.7, H:1.4, ry:0 },
+    // Back wall — medium right
+    { id:"aw3", x:3.8,  y:2.0,  z:-9.8, W:1.7, H:1.4, ry:0 },
+    // Back wall — small cluster left (stacked 2)
+    { id:"aw5", x:-6.5, y:2.6,  z:-9.8, W:1.1, H:0.88, ry:0 },
+    { id:"aw6", x:-6.5, y:1.4,  z:-9.8, W:1.1, H:0.88, ry:0 },
+    // Back wall — small cluster right (stacked 2)
+    { id:"aw7", x:6.5,  y:2.6,  z:-9.8, W:1.1, H:0.88, ry:0 },
+    { id:"aw8", x:6.5,  y:1.4,  z:-9.8, W:1.1, H:0.88, ry:0 },
+    // Left side wall
+    { id:"aw4", x:-10.8, y:2.0, z:-4,   W:1.8, H:2.2, ry: Math.PI/2 },
+  ];
+
+
+  hangLayout.forEach((spec, idx) => {
+    const art = ARTWORKS.find(a => a.id === spec.id); if (!art) return;
+    const FW = spec.W + 0.18, FH = spec.H + 0.18;
+
+    // Spotlight for this painting
+    const spot = new THREE.SpotLight(0xfff8e8, 3.5, 9, Math.PI/10, 0.3, 1.5);
+    const sOff = new THREE.Vector3(spec.x, H-0.3, spec.z+1.0);
+    if (spec.ry) sOff.applyEuler(new THREE.Euler(0, spec.ry, 0));
+    spot.position.copy(sOff);
+    spot.target.position.set(spec.x, spec.y, spec.z);
+    if (spec.ry) {
+      spot.position.set(spec.x + (spec.ry > 0 ? 1.0 : -1.0), H-0.3, spec.z);
+      spot.target.position.set(spec.x, spec.y, spec.z);
+    }
+    scene.add(spot); scene.add(spot.target);
+
+    // Frame — dark wood
+    const frameGeo = new THREE.BoxGeometry(FW, FH, 0.055);
+    const fMat = new THREE.MeshStandardMaterial({color:0x2a1e0e, roughness:0.55, metalness:0.15});
+    const frame = new THREE.Mesh(frameGeo, fMat);
+    frame.position.set(spec.x, spec.y, spec.z+0.01); frame.rotation.y = spec.ry;
+    frame.castShadow = true; scene.add(frame);
+
+    // Frame inner lip (gold-ish)
+    const lipGeo = new THREE.BoxGeometry(spec.W+0.06, spec.H+0.06, 0.058);
+    const lipMat = new THREE.MeshStandardMaterial({color:0x9a7a40, roughness:0.25, metalness:0.6});
+    const lip = new THREE.Mesh(lipGeo, lipMat);
+    lip.position.set(spec.x, spec.y, spec.z+0.012); lip.rotation.y = spec.ry; scene.add(lip);
+
+    // Canvas
+    function mountCanvas(tex) {
+      const cGeo = new THREE.PlaneGeometry(spec.W, spec.H);
+      const cMat = new THREE.MeshStandardMaterial({map:tex, roughness:0.82});
+      const cm = new THREE.Mesh(cGeo, cMat);
+      cm.position.set(spec.x, spec.y, spec.z+0.03); cm.rotation.y = spec.ry; scene.add(cm);
+
+      // Hit target
+      const hGeo = new THREE.PlaneGeometry(FW, FH);
+      const hMat = new THREE.MeshBasicMaterial({transparent:true, opacity:0.001, depthWrite:false});
+      const hit = new THREE.Mesh(hGeo, hMat);
+      hit.position.set(spec.x, spec.y, spec.z+0.05); hit.rotation.y = spec.ry;
+      hit.userData = { artId: art.id };
+      hitMeshes.push(hit); scene.add(hit);
+    }
+
+    if (art.image) {
+      var img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = function() {
+        var tex = new THREE.Texture(img);
+        tex.needsUpdate = true;
+        previewCanvases[art.id] = null;
+        mountCanvas(tex);
+      };
+      img.onerror = function() {
+        mountCanvas(makeFallbackTexture(art));
+      };
+      img.src = art.image;
+    } else {
+      mountCanvas(makeFallbackTexture(art));
+    }
+
+    // Small plaque below painting (only for medium+ sized works)
+    if (spec.W >= 1.5) {
+      const pC = document.createElement("canvas"); pC.width=280; pC.height=52;
+      const pCtx = pC.getContext("2d");
+      pCtx.fillStyle="rgba(240,235,225,0.95)"; pCtx.fillRect(0,0,280,52);
+      pCtx.fillStyle="rgba(138,92,26,0.4)"; pCtx.fillRect(0,0,280,1);
+      pCtx.font="italic 17px Cormorant Garamond,Georgia,serif"; pCtx.fillStyle="#1a1510"; pCtx.textAlign="center";
+      pCtx.fillText(art.title, 140, 22);
+      pCtx.font="11px DM Sans,sans-serif"; pCtx.fillStyle="#8a5c1a";
+      pCtx.fillText("$"+art.price.toLocaleString()+"  ·  "+art.creator, 140, 40);
+      const pTex = new THREE.CanvasTexture(pC);
+      const plaqueGeo = new THREE.PlaneGeometry(1.2, 0.24);
+      const plaqueMat = new THREE.MeshBasicMaterial({map:pTex, transparent:true});
+      const plaque = new THREE.Mesh(plaqueGeo, plaqueMat);
+      const pOff = new THREE.Vector3(spec.x, spec.y - spec.H/2 - 0.2, spec.z+0.03);
+      plaque.position.copy(pOff); plaque.rotation.y = spec.ry; scene.add(plaque);
+    }
+  });
+}
+
+// ═══════════════════════════════════════
+// PANEL UI
+// ═══════════════════════════════════════
+function openArtPanel(artId) {
+  const art = ARTWORKS.find(a => a.id === artId); if (!art) return;
+  const imgDiv = document.getElementById("panelImg");
+  const bodyDiv = document.getElementById("panelBody");
+  imgDiv.innerHTML = "";
+  if (art.image) {
+    const img = document.createElement("img"); img.src = art.image; img.alt = art.title; imgDiv.appendChild(img);
+  } else if (previewCanvases[art.id]) {
+    const src = previewCanvases[art.id];
+    const ic = document.createElement("canvas"); ic.style.cssText="width:100%;height:100%;display:block;";
+    ic.width = src.width; ic.height = src.height; ic.getContext("2d").drawImage(src,0,0); imgDiv.appendChild(ic);
+  }
+  const isAvail = art.status === "available";
+  bodyDiv.innerHTML = `
+    <p class="panel-eyebrow">Online Gallery</p>
+    <h2 class="panel-title">${art.title}</h2>
+    <p class="panel-by">By ${art.creator} &nbsp;·&nbsp; ${art.year}</p>
+    <p class="panel-desc">${art.desc}</p>
+    <div class="panel-meta">
+      <div class="panel-meta-item"><label>Medium</label><span>${art.medium}</span></div>
+      <div class="panel-meta-item"><label>Dimensions</label><span>${art.dims}</span></div>
+    </div>
+    <p class="panel-price" style="color:${isAvail?"#8a5c1a":"#999"}">${isAvail?"$"+art.price.toLocaleString():"SOLD"}</p>
+    <div class="panel-actions">
+      ${isAvail ? `
+        <button class="btn-purchase" onclick="purchaseArt('${art.id}')">Purchase Now</button>
+        <button class="btn-cart" onclick="addToCartFn('${art.id}')">+ Add to Cart</button>
+      ` : `
+        <div class="sold-tag">This work has been sold.<br/>
+          <a href="mailto:hello@raicreates.com?subject=Commission: ${encodeURIComponent(art.title)}">Commission a similar piece &rarr;</a>
+        </div>
+      `}
+    </div>
+    <p style="font-size:0.68rem;color:#8a7a60;text-align:center;margin-top:0.85rem;">Secure checkout via Stripe &nbsp;&middot;&nbsp; Ships within 7 days</p>
+  `;
+  document.getElementById("artPanel").classList.add("open");
+}
+
+function closeArtPanel() { document.getElementById("artPanel").classList.remove("open"); }
+
+function purchaseArt(id) {
+  var art = ARTWORKS.find(function(a) { return a.id === id; });
+  if (!art) return;
+  if (art.stripeLink && !art.stripeLink.includes('YOUR_LINK')) {
+    window.open(art.stripeLink, '_blank');
+  }
+}
+
+function addToCartFn(id) {
+  const art = ARTWORKS.find(a=>a.id===id); if(!art) return;
+  document.getElementById("cartToastText").textContent = '"'+art.title+'" added to cart!';
+  const t = document.getElementById("cartToast"); t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"), 3000);
+}
+
+// ═══════════════════════════════════════
+// CONTROLS
+// ═══════════════════════════════════════
+document.addEventListener("keydown", e=>keys[e.code]=true);
+document.addEventListener("keyup",   e=>keys[e.code]=false);
+
+// Mouse drag (no pointer lock required)
+canvas.addEventListener("mousedown", e => { isDragging=true; lastMX=e.clientX; lastMY=e.clientY; });
+canvas.addEventListener("mouseup",   () => isDragging=false);
+canvas.addEventListener("mouseleave",() => isDragging=false);
+canvas.addEventListener("mousemove", e => {
+  if (isLocked) {
+    yaw -= e.movementX*0.0016; pitch = Math.max(-0.8,Math.min(0.8,pitch-e.movementY*0.0016));
+  } else if (isDragging) {
+    yaw -= (e.clientX-lastMX)*0.004; pitch = Math.max(-0.8,Math.min(0.8,pitch-(e.clientY-lastMY)*0.004));
+    lastMX=e.clientX; lastMY=e.clientY;
+  }
+});
+
+canvas.addEventListener("click", e => {
+  if (isDragging) return;
+  if (!isLocked) {
+    const r = canvas.getBoundingClientRect();
+    pointer.x = ((e.clientX-r.left)/r.width)*2-1;
+    pointer.y = -((e.clientY-r.top)/r.height)*2+1;
+    raycaster.setFromCamera(pointer, camera);
+  } else {
+    raycaster.setFromCamera(new THREE.Vector2(0,0), camera);
+  }
+  const hits = raycaster.intersectObjects(hitMeshes);
+  if (hits.length>0) openArtPanel(hits[0].object.userData.artId);
+});
+
+let lastTouch=null;
+canvas.addEventListener("touchmove", e=>{
+  e.preventDefault();
+  if (lastTouch && e.touches.length===1) {
+    yaw -= (e.touches[0].clientX-lastTouch.x)*0.004;
+    pitch = Math.max(-0.8,Math.min(0.8,pitch-(e.touches[0].clientY-lastTouch.y)*0.004));
+  }
+  lastTouch = {x:e.touches[0].clientX,y:e.touches[0].clientY};
+},{passive:false});
+canvas.addEventListener("touchend", ()=>lastTouch=null);
+canvas.addEventListener("touchstart", e=>{
+  lastTouch={x:e.touches[0].clientX,y:e.touches[0].clientY};
+  const r=canvas.getBoundingClientRect();
+  pointer.x=((e.touches[0].clientX-r.left)/r.width)*2-1;
+  pointer.y=-((e.touches[0].clientY-r.top)/r.height)*2+1;
+  raycaster.setFromCamera(pointer,camera);
+  const hits=raycaster.intersectObjects(hitMeshes);
+  if(hits.length>0) openArtPanel(hits[0].object.userData.artId);
+});
+
+document.addEventListener("pointerlockchange",()=>{
+  isLocked = document.pointerLockElement===canvas;
+  document.getElementById("exploreBtn").innerHTML = isLocked ? "&#9671; Exit Explore" : "&#9671; Free Explore";
+  document.getElementById("crosshair").style.opacity = isLocked ? "1" : "0.3";
+});
+function togglePointerLock() { isLocked ? document.exitPointerLock() : canvas.requestPointerLock(); }
+
+// ═══════════════════════════════════════
+// RENDER LOOP
+// ═══════════════════════════════════════
+const clock = new THREE.Clock();
+const fwd=new THREE.Vector3(), rt=new THREE.Vector3(), mv=new THREE.Vector3();
+
+function animate() {
+  requestAnimationFrame(animate);
+  const dt = Math.min(clock.getDelta(), 0.05);
+  camera.rotation.order="YXZ"; camera.rotation.y=yaw; camera.rotation.x=pitch;
+  fwd.set(-Math.sin(yaw),0,-Math.cos(yaw));
+  rt.set(Math.cos(yaw),0,-Math.sin(yaw));
+  mv.set(0,0,0);
+  if(keys["KeyW"]||keys["ArrowUp"])    mv.addScaledVector(fwd, 4.5*dt);
+  if(keys["KeyS"]||keys["ArrowDown"])  mv.addScaledVector(fwd,-4.5*dt);
+  if(keys["KeyA"]||keys["ArrowLeft"])  mv.addScaledVector(rt, -4.5*dt);
+  if(keys["KeyD"]||keys["ArrowRight"]) mv.addScaledVector(rt,  4.5*dt);
+  camera.position.add(mv);
+  camera.position.x = Math.max(-9.5,Math.min(9.5,camera.position.x));
+  camera.position.z = Math.max(-8,  Math.min(8.5,camera.position.z));
+  camera.position.y = 1.65;
+
+  raycaster.setFromCamera(new THREE.Vector2(0,0),camera);
+  document.getElementById("crosshair").classList.toggle("hover", raycaster.intersectObjects(hitMeshes).length>0);
+
+  renderer.render(scene,camera);
+}
+
+window.addEventListener("resize",()=>{
+  camera.aspect=window.innerWidth/window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth,window.innerHeight);
+});
+
+// Loading
+let lp=0;
+const li=setInterval(()=>{
+  lp+=25; document.getElementById("loaderBar").style.width=Math.min(lp,92)+"%";
+  if(lp>=92) clearInterval(li);
+},220);
+buildRoom();
+setTimeout(()=>{
+  document.getElementById("loaderBar").style.width="100%";
+  document.getElementById("loaderMsg").textContent="Welcome.";
+  setTimeout(()=>{
+    document.getElementById("loader").classList.add("hidden");
+    setTimeout(()=>{ const l=document.getElementById("loader"); if(l) l.style.display="none"; },900);
+  },500);
+},1600);
+setTimeout(()=>document.getElementById("controlsHint").classList.add("hidden"),9000);
+animate();
+</script>
+</body>
+</html>

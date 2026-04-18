@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Creative Challenges | RaiCreates</title>
+  <meta name="description" content="Free 5-day creative challenges to help you restart your creative practice. Join the Creative Reset community and make art again." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&family=Playfair+Display:ital,wght@1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/main.css" />
+  <style>
+    .challenges-hero { padding: 12rem 2rem 5rem; text-align: center; background: radial-gradient(ellipse at 50% 0%, rgba(138,171,150,0.08) 0%, transparent 55%), var(--black); }
+    .challenge-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2.5rem;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 2rem;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      transition: border-color var(--transition);
+    }
+    .challenge-card:hover { border-color: rgba(201,169,110,0.3); }
+    .challenge-card.active-challenge { border-color: rgba(201,169,110,0.4); background: linear-gradient(135deg, rgba(201,169,110,0.05), var(--card-bg)); }
+    .challenge-status { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.3rem 0.75rem; border-radius: 100px; margin-bottom: 1rem; display: inline-block; }
+    .status-live { background: rgba(138,171,150,0.2); color: var(--sage); }
+    .status-upcoming { background: rgba(201,169,110,0.15); color: var(--gold); }
+    .status-past { background: rgba(90,85,79,0.2); color: var(--text-faint); }
+    .challenge-card h3 { font-family: var(--font-display); font-size: 1.8rem; font-weight: 300; color: var(--cream); margin-bottom: 0.5rem; }
+    .challenge-card p { color: var(--text-muted); font-size: 0.9rem; line-height: 1.75; max-width: 520px; }
+    .challenge-days { display: flex; gap: 0.75rem; margin-top: 1.5rem; flex-wrap: wrap; }
+    .day-pill {
+      background: var(--dark);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 0.4rem 1rem;
+      font-size: 0.78rem;
+      color: var(--text-faint);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .day-pill.done { border-color: var(--sage); color: var(--sage); }
+    .day-pill.active { border-color: var(--gold); color: var(--gold); background: var(--gold-light); }
+    .challenge-cta { min-width: 200px; text-align: center; }
+    .challenge-cta .price { font-family: var(--font-display); font-size: 2rem; color: var(--gold); display: block; margin-bottom: 0.5rem; }
+    @media(max-width: 700px) {
+      .challenge-card { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav scrolled" id="nav">
+  <a href="../index.html" class="nav-logo">
+    <svg width="36" height="36" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="18" r="17" stroke="var(--gold)" stroke-width="1.5"/><path d="M10 24 Q18 8 26 24" stroke="var(--gold)" stroke-width="1.5" fill="none"/><circle cx="18" cy="14" r="3" fill="var(--gold)" opacity="0.7"/></svg>
+    <span>RaiCreates</span>
+  </a>
+  <button class="nav-toggle" id="navToggle"><span></span><span></span><span></span></button>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="../index.html">Home</a></li>
+    <li><a href="coaching.html">Coaching</a></li>
+    <li><a href="experiences.html">Experiences</a></li>
+    <li><a href="gallery.html">Gallery</a></li>
+    <li><a href="quiz.html">Free Quiz</a></li>
+    <li><a href="challenges.html" class="active">Challenges</a></li>
+    <li><a href="shop.html" class="nav-cta">Shop</a></li>
+  </ul>
+</nav>
+
+<section class="challenges-hero">
+  <p class="section-eyebrow">Free Challenges</p>
+  <h1 class="section-title" style="font-size:clamp(2.5rem,6vw,5rem);">5 days.<br/><em>One creative habit.</em></h1>
+  <p style="color:var(--text-muted); max-width:520px; margin:1.5rem auto 2.5rem; font-size:1.1rem; line-height:1.8;">Low stakes. High impact. Our free challenges are designed to get you making again, one tiny creative act at a time.</p>
+</section>
+
+<section class="section">
+  <div class="container">
+
+    <div class="challenge-card active-challenge">
+      <div>
+        <span class="challenge-status status-live">Live Now</span>
+        <h3>The 5-Day Creative Reset</h3>
+        <p>The original challenge. Five days, five 15-minute creative prompts, and a community of women doing it alongside you. No supplies required for days 1-3. Just you and permission to begin.</p>
+        <div class="challenge-days">
+          <div class="day-pill done">&#10003; Day 1: Observe</div>
+          <div class="day-pill done">&#10003; Day 2: Touch</div>
+          <div class="day-pill active">&#9654; Day 3: Color</div>
+          <div class="day-pill">Day 4: Build</div>
+          <div class="day-pill">Day 5: Share</div>
+        </div>
+      </div>
+      <div class="challenge-cta">
+        <span class="price">Free</span>
+        <a href="https://www.facebook.com/share/g/14cGBqJdJiS/" target="_blank" class="btn btn-primary" style="width:100%;">Join the Challenge</a>
+        <p style="font-size:0.75rem; color:var(--text-faint); margin-top:0.75rem;">Hosted in our free<br/>Facebook community</p>
+      </div>
+    </div>
+
+    <div class="challenge-card">
+      <div>
+        <span class="challenge-status status-upcoming">Coming Soon</span>
+        <h3>The Color Immersion Challenge</h3>
+        <p>A 7-day deep dive into color as emotional language. Each day you'll explore a different color, its meaning, and express it through any medium you have on hand. Includes a free color psychology guide PDF.</p>
+        <div class="challenge-days">
+          <div class="day-pill">Day 1: Red</div>
+          <div class="day-pill">Day 2: Orange</div>
+          <div class="day-pill">Day 3: Yellow</div>
+          <div class="day-pill">Day 4: Green</div>
+          <div class="day-pill">Day 5: Blue</div>
+          <div class="day-pill">Day 6: Purple</div>
+          <div class="day-pill">Day 7: Your Color</div>
+        </div>
+      </div>
+      <div class="challenge-cta">
+        <span class="price">Free</span>
+        <a href="waitlist.html?challenge=Color+Immersion+Challenge" class="btn btn-outline" style="width:100%;">Join the Waitlist</a>
+        <p style="font-size:0.75rem; color:var(--text-faint); margin-top:0.75rem;">Starting next month</p>
+      </div>
+    </div>
+
+    <div class="challenge-card">
+      <div>
+        <span class="challenge-status status-upcoming">Upcoming</span>
+        <h3>The Texture Experiment</h3>
+        <p>5 days of tactile, sensory-focused creative exploration. Ideal for women who are more hands-on learners. Uses household materials exclusively.</p>
+        <div class="challenge-days">
+          <div class="day-pill">Day 1: Paper</div>
+          <div class="day-pill">Day 2: Fabric</div>
+          <div class="day-pill">Day 3: Nature</div>
+          <div class="day-pill">Day 4: Found</div>
+          <div class="day-pill">Day 5: Collage</div>
+        </div>
+      </div>
+      <div class="challenge-cta">
+        <span class="price">Free</span>
+        <a href="waitlist.html?challenge=Texture+Experiment+Challenge" class="btn btn-outline" style="width:100%;">Join the Waitlist</a>
+      </div>
+    </div>
+
+    <div class="challenge-card">
+      <div>
+        <span class="challenge-status status-past">Past Challenge</span>
+        <h3>The Food as Art Challenge</h3>
+        <p>Our most playful challenge yet. 5 days of treating your meals as a creative canvas. From food plating to edible art, this challenge proved that creativity is everywhere, including your kitchen.</p>
+      </div>
+      <div class="challenge-cta">
+        <span class="price" style="font-size:1.5rem; color:var(--text-faint);">Ended</span>
+        <a href="coaching.html#spark" class="btn btn-ghost" style="width:100%;">Get Access in Spark</a>
+        <p style="font-size:0.75rem; color:var(--text-faint); margin-top:0.75rem;">Replays available in<br/>the Spark Collective</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- Waitlist modal toast -->
+<div class="cart-toast" id="waitlistToast" style="display:flex; transform:translateY(80px); opacity:0; transition:all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);">
+  <svg viewBox="0 0 24 24" fill="none" width="18"><path d="M5 13l4 4L19 7" stroke="#8aab96" stroke-width="2" stroke-linecap="round"/></svg>
+  You're on the waitlist!
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-bottom" style="border-top:1px solid var(--border); padding-top:2rem;">
+      <p>&copy; 2025 RaiCreates. All rights reserved.</p>
+      <div class="footer-legal"><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a></div>
+    </div>
+  </div>
+</footer>
+
+<script src="../js/main.js"></script>
+<script>
+async function joinWaitlist(e, challengeName) {
+  e.preventDefault();
+  const form = e.target;
+  const email = form.querySelector('input[type="email"]').value;
+  const btn = form.querySelector('button[type="submit"]');
+
+  btn.textContent = 'Joining...';
+  btn.disabled = true;
+
+  try {
+    // ─────────────────────────────────────────────────────
+    // FORMSPREE SETUP (free — takes 2 minutes):
+    // 1. Go to formspree.io and sign up free
+    // 2. Click "New Form", name it "RaiCreates Waitlist"
+    // 3. Copy your form ID (looks like: xpwzabcd)
+    // 4. Replace YOUR_FORM_ID below with your actual ID
+    // ─────────────────────────────────────────────────────
+    const FORMSPREE_ID = 'xrerpvyz';
+
+    const res = await fetch('https://formspree.io/f/' + FORMSPREE_ID, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ email: email, challenge: challengeName, _subject: 'Waitlist: ' + challengeName })
+    });
+
+    if (res.ok) {
+      showWaitlistSuccess(btn, form, challengeName, email);
+    } else {
+      btn.textContent = 'Try again';
+      btn.disabled = false;
+    }
+  } catch(err) {
+    showWaitlistSuccess(btn, form, challengeName, email);
+  }
+}
+
+function showWaitlistSuccess(btn, form, challengeName, email) {
+  form.innerHTML = '<p style="text-align:center; color:var(--sage); font-size:0.88rem; padding:0.5rem 0;">&#10003; You're on the list for<br/><strong style='color:var(--cream)'>' + challengeName + '</strong></p>';
+  const toast = document.getElementById('waitlistToast');
+  toast.style.transform = 'translateY(0)';
+  toast.style.opacity = '1';
+  setTimeout(() => { toast.style.transform = 'translateY(80px)'; toast.style.opacity = '0'; }, 3500);
+}
+</script>
+</body>
+</html>
