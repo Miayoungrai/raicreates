@@ -467,7 +467,6 @@ function buildRoom() {
     { id:"aw4", x:-10.8, y:2.0, z:-4,   W:1.8, H:2.2, ry: Math.PI/2 },
   ];
 
-  const texLoader = new THREE.TextureLoader();
 
   hangLayout.forEach((spec, idx) => {
     const art = ARTWORKS.find(a => a.id === spec.id); if (!art) return;
@@ -515,7 +514,18 @@ function buildRoom() {
     }
 
     if (art.image) {
-      texLoader.load(art.image, tex => mountCanvas(tex), undefined, () => mountCanvas(makeFallbackTexture(art)));
+      var img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = function() {
+        var tex = new THREE.Texture(img);
+        tex.needsUpdate = true;
+        previewCanvases[art.id] = null;
+        mountCanvas(tex);
+      };
+      img.onerror = function() {
+        mountCanvas(makeFallbackTexture(art));
+      };
+      img.src = art.image;
     } else {
       mountCanvas(makeFallbackTexture(art));
     }

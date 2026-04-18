@@ -4,21 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Art Gallery | RaiCreates</title>
-  <meta name="description" content="Browse and purchase original art from Rai and our creative community. View the collection in our immersive VR gallery." />
+  <meta name="description" content="Browse and purchase original art from Mia and our creative community. Step inside the online 3D gallery." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&family=Playfair+Display:ital,wght@1,400&display=swap" rel="stylesheet" />
   <script src="https://js.stripe.com/v3/"></script>
-  <!-- A-Frame for VR -->
-  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
   <link rel="stylesheet" href="../css/main.css" />
   <link rel="stylesheet" href="../css/gallery.css" />
-  <style>
-    .vr-room-selector { display:flex; gap:0.5rem; flex-wrap:wrap; }
-    .vr-room-btn { background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); color:#b0a89e; border-radius:100px; padding:0.4rem 1rem; font-family:sans-serif; font-size:0.78rem; cursor:pointer; transition:all 0.25s; }
-    .vr-room-btn:hover { border-color:rgba(255,255,255,0.25); color:#f5efe6; }
-    .vr-room-btn.active { background:#c9a96e; color:#0d0d0d; border-color:#c9a96e; font-weight:600; }
-  </style>
+
 </head>
 <body>
 
@@ -44,10 +37,9 @@
   <div class="page-hero-content">
     <p class="section-eyebrow">The Gallery</p>
     <h1 class="section-title">Art made from <em>feeling.</em></h1>
-    <p style="color:var(--text-muted); max-width:520px; margin: 1rem auto 2rem; font-size:1.05rem;">Original works from Rai and our community. Each piece carries a story. View in 2D or step inside our VR gallery for a fully immersive experience.</p>
+    <p style="color:var(--text-muted); max-width:520px; margin: 1rem auto 2rem; font-size:1.05rem;">Original works from Mia and our community. Each piece carries a story. Browse below or step inside our immersive 3D gallery.</p>
     <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;">
-      <button class="btn btn-primary" onclick="openVR('encouragement')">Enter VR Gallery</button>
-      <a href="showroom.html" class="btn btn-ghost">Online Gallery</a>
+      <a href="showroom.html" class="btn btn-primary">Enter Online Gallery</a>
     </div>
   </div>
 </section>
@@ -208,26 +200,6 @@
     </div>
   </div>
 </section>
-
-<!-- ======== VR GALLERY MODAL ======== -->
-<div class="vr-modal" id="vrModal">
-  <div class="vr-modal-header">
-    <div>
-      <h2>Virtual Gallery</h2>
-      <p>Look around with mouse or touch. Click any artwork to purchase. Walk with W/A/S/D keys.</p>
-    </div>
-    <div class="vr-room-selector">
-      <button class="vr-room-btn active" data-room="encouragement" onclick="switchRoom('encouragement')">Room 1: Encouragement</button>
-      <button class="vr-room-btn" data-room="grounded" onclick="switchRoom('grounded')">Room 2: Grounded</button>
-      <button class="vr-room-btn" data-room="luxury" onclick="switchRoom('luxury')">Room 3: Luxury</button>
-    </div>
-    <button class="vr-close" onclick="closeVR()">Close &times;</button>
-  </div>
-  <div class="vr-container" id="vrContainer">
-    <!-- A-Frame VR Scene is injected here on open to avoid loading it upfront -->
-  </div>
-</div>
-<div class="vr-backdrop" id="vrBackdrop" onclick="closeVR()"></div>
 
 <!-- ======== ARTWORK DETAIL MODAL ======== -->
 <div class="artwork-modal" id="artworkModal">
