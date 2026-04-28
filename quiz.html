@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Creative Block Quiz | RaiCreates</title>
+  <meta name="description" content="Discover which creative block is holding you back and get a personalized path forward. Free 2-minute quiz from RaiCreates." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&family=Playfair+Display:ital,wght@1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="main.css" />
+  <style>
+    .quiz-wrap {
+      min-height: 100vh;
+      padding: calc(var(--nav-h) + 4rem) 2rem 6rem;
+      background: radial-gradient(ellipse at 50% 20%, rgba(201,169,110,0.07) 0%, transparent 60%), var(--black);
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+    }
+    .quiz-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 3.5rem;
+      max-width: 640px;
+      width: 100%;
+      text-align: center;
+    }
+    .quiz-progress-bar {
+      width: 100%;
+      height: 3px;
+      background: var(--dark);
+      border-radius: 100px;
+      margin-bottom: 2.5rem;
+      overflow: hidden;
+    }
+    .quiz-progress-fill {
+      height: 100%;
+      background: var(--gold);
+      border-radius: 100px;
+      transition: width 0.4s ease;
+    }
+    .quiz-counter {
+      font-size: 0.72rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      margin-bottom: 1.5rem;
+    }
+    .quiz-question {
+      font-family: var(--font-display);
+      font-size: clamp(1.5rem, 3vw, 2.2rem);
+      font-weight: 300;
+      color: var(--cream);
+      line-height: 1.3;
+      margin-bottom: 2.5rem;
+    }
+    .quiz-options { display: flex; flex-direction: column; gap: 0.85rem; text-align: left; }
+    .quiz-option {
+      background: var(--dark);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.1rem 1.4rem;
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all var(--transition);
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      text-align: left;
+    }
+    .quiz-option:hover { border-color: var(--gold); color: var(--cream); background: rgba(201,169,110,0.05); }
+    .quiz-option.selected { border-color: var(--gold); background: var(--gold-light); color: var(--cream); }
+    .quiz-option-key {
+      min-width: 28px; height: 28px;
+      background: var(--dark-mid);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-faint);
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .quiz-option.selected .quiz-option-key { background: var(--gold); color: var(--black); border-color: var(--gold); }
+    .quiz-nav { display: flex; justify-content: space-between; margin-top: 2rem; }
+    .quiz-result { display: none; }
+    .quiz-result.show { display: block; }
+    .quiz-active { display: block; }
+    .quiz-active.hide { display: none; }
+    .result-type {
+      display: inline-block;
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--gold);
+      background: var(--gold-light);
+      padding: 0.4rem 1rem;
+      border-radius: 100px;
+      margin-bottom: 1.5rem;
+    }
+    .result-title {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 300;
+      color: var(--cream);
+      margin-bottom: 1rem;
+    }
+    .result-desc {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      line-height: 1.8;
+      max-width: 500px;
+      margin: 0 auto 2rem;
+    }
+    .result-recs {
+      background: var(--dark);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      text-align: left;
+    }
+    .result-recs h4 {
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1rem;
+    }
+    .result-recs ul { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+    .result-recs li { display: flex; align-items: flex-start; gap: 0.75rem; font-size: 0.9rem; color: var(--text-muted); }
+    .result-recs li::before { content: '→'; color: var(--gold); flex-shrink: 0; }
+  </style>
+</head>
+<body>
+
+<nav class="nav scrolled" id="nav">
+  <a href="index.html" class="nav-logo">
+    <svg width="36" height="36" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="18" r="17" stroke="var(--gold)" stroke-width="1.5"/><path d="M10 24 Q18 8 26 24" stroke="var(--gold)" stroke-width="1.5" fill="none"/><circle cx="18" cy="14" r="3" fill="var(--gold)" opacity="0.7"/></svg>
+    <span>RaiCreates</span>
+  </a>
+  <button class="nav-toggle" id="navToggle"><span></span><span></span><span></span></button>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="coaching.html">Coaching</a></li>
+    <li><a href="experiences.html">Experiences</a></li>
+    <li><a href="gallery.html">Gallery</a></li>
+    <li><a href="quiz.html" class="active">Free Quiz</a></li>
+    <li><a href="challenges.html">Challenges</a></li>
+    <li><a href="shop.html" class="nav-cta">Shop</a></li>
+  </ul>
+</nav>
+
+<div class="quiz-wrap">
+  <div class="quiz-card">
+
+    <!-- Quiz intro -->
+    <div id="quizIntro">
+      <p class="section-eyebrow">Free Assessment</p>
+      <h1 class="section-title" style="font-size:clamp(2rem,4vw,3rem); margin-bottom:1rem;">What's blocking your creativity?</h1>
+      <p style="color:var(--text-muted); line-height:1.8; margin-bottom:2rem; font-size:1.05rem;">In just 6 questions, discover your creative block type and get a personalized path back to yourself.</p>
+      <p style="font-size:0.82rem; color:var(--text-faint); margin-bottom:2rem;">Takes about 2 minutes &bull; 100% free</p>
+      <button class="btn btn-primary btn-lg" onclick="startQuiz()">Start the Quiz</button>
+    </div>
+
+    <!-- Quiz questions -->
+    <div id="quizQuestions" style="display:none;">
+      <div class="quiz-progress-bar">
+        <div class="quiz-progress-fill" id="progressFill" style="width:0%"></div>
+      </div>
+      <p class="quiz-counter" id="quizCounter">Question 1 of 6</p>
+      <p class="quiz-question" id="questionText"></p>
+      <div class="quiz-options" id="optionsContainer"></div>
+      <div class="quiz-nav">
+        <button class="btn btn-ghost btn-sm" id="backBtn" onclick="prevQuestion()" style="display:none;">Back</button>
+        <div style="flex:1"></div>
+        <button class="btn btn-primary btn-sm" id="nextBtn" onclick="nextQuestion()" disabled>Next</button>
+      </div>
+    </div>
+
+    <!-- Quiz result -->
+    <div id="quizResult" style="display:none;">
+      <div id="resultContent"></div>
+      <button class="btn btn-ghost btn-sm" onclick="resetQuiz()" style="margin-top:1rem;">Retake Quiz</button>
+    </div>
+
+  </div>
+</div>
+
+<script src="main.js"></script>
+<script>
+const questions = [
+  {
+    text: "When you think about making art or doing something creative, what's your first feeling?",
+    options: [
+      { text: "\"I don't have time for that.\"", scores: { burnout: 3, perfectionism: 0, identity: 1, fear: 0 } },
+      { text: "\"I'm probably not good enough to bother.\"", scores: { burnout: 0, perfectionism: 1, identity: 1, fear: 3 } },
+      { text: "\"I wouldn't even know where to start.\"", scores: { burnout: 1, perfectionism: 2, identity: 2, fear: 1 } },
+      { text: "\"I used to love it, but I've lost that part of me.\"", scores: { burnout: 2, perfectionism: 0, identity: 3, fear: 1 } },
+    ]
+  },
+  {
+    text: "How often do you make time for something just because it brings you joy?",
+    options: [
+      { text: "Almost never. Joy isn't really in my schedule.", scores: { burnout: 3, perfectionism: 0, identity: 2, fear: 0 } },
+      { text: "Sometimes, but I feel guilty when I do.", scores: { burnout: 1, perfectionism: 3, identity: 1, fear: 1 } },
+      { text: "I want to, but I can't figure out what actually brings me joy anymore.", scores: { burnout: 1, perfectionism: 0, identity: 3, fear: 1 } },
+      { text: "I try, but I stop before I really begin.", scores: { burnout: 0, perfectionism: 1, identity: 1, fear: 3 } },
+    ]
+  },
+  {
+    text: "When you imagine sharing something you've made with others, how does that feel?",
+    options: [
+      { text: "I'd need it to be perfect first.", scores: { burnout: 0, perfectionism: 3, identity: 0, fear: 2 } },
+      { text: "Terrifying. What if they judge me?", scores: { burnout: 0, perfectionism: 1, identity: 1, fear: 3 } },
+      { text: "Honestly, I don't make things, so this doesn't apply.", scores: { burnout: 2, perfectionism: 1, identity: 2, fear: 0 } },
+      { text: "I'm not sure that the things I make are worth sharing.", scores: { burnout: 1, perfectionism: 2, identity: 2, fear: 1 } },
+    ]
+  },
+  {
+    text: "How do you feel at the end of a typical week?",
+    options: [
+      { text: "Completely drained. Running on empty.", scores: { burnout: 3, perfectionism: 0, identity: 1, fear: 0 } },
+      { text: "Like I could have done more, done better.", scores: { burnout: 1, perfectionism: 3, identity: 0, fear: 1 } },
+      { text: "Disconnected. Like I went through the motions.", scores: { burnout: 2, perfectionism: 0, identity: 3, fear: 0 } },
+      { text: "Okay, but restless. Like something's missing.", scores: { burnout: 0, perfectionism: 1, identity: 2, fear: 2 } },
+    ]
+  },
+  {
+    text: "What does creativity mean to you right now?",
+    options: [
+      { text: "A luxury I can't afford.", scores: { burnout: 3, perfectionism: 1, identity: 0, fear: 0 } },
+      { text: "Something other people have, but I'm not sure I do.", scores: { burnout: 0, perfectionism: 2, identity: 2, fear: 2 } },
+      { text: "Something I used to have but lost somewhere along the way.", scores: { burnout: 2, perfectionism: 0, identity: 3, fear: 0 } },
+      { text: "Something I want, but it feels too risky to pursue.", scores: { burnout: 0, perfectionism: 1, identity: 1, fear: 3 } },
+    ]
+  },
+  {
+    text: "What would it mean to you to have a regular creative practice?",
+    options: [
+      { text: "It would mean I finally have space to breathe.", scores: { burnout: 3, perfectionism: 0, identity: 1, fear: 0 } },
+      { text: "It would mean I finally feel like myself again.", scores: { burnout: 1, perfectionism: 0, identity: 3, fear: 1 } },
+      { text: "It would mean I stopped letting fear win.", scores: { burnout: 0, perfectionism: 1, identity: 1, fear: 3 } },
+      { text: "It would mean I stopped waiting until I was good enough.", scores: { burnout: 0, perfectionism: 3, identity: 1, fear: 1 } },
+    ]
+  }
+];
+
+const results = {
+  burnout: {
+    type: 'The Burned-Out Achiever',
+    title: 'You need rest before you can create.',
+    desc: 'You\'re not blocked. You\'re depleted. Somewhere between your career, your responsibilities, and showing up for everyone else, you forgot to show up for yourself. The creative spark is still there. It just needs fuel.',
+    recs: [
+      'Start with The Spark Collective to ease back into creativity without pressure',
+      'Try one of our monthly drop-in art sessions before committing to a program',
+      'Download the free Burnout Prevention Workbook from the shop'
+    ],
+    cta: 'Join the Spark Collective',
+    ctaLink: 'coaching.html#spark'
+  },
+  perfectionism: {
+    type: 'The Hidden Perfectionist',
+    title: 'The bar is so high, you never start.',
+    desc: 'You have taste, vision, and standards. Beautiful qualities. But right now they\'re keeping you stuck. You\'re waiting to be ready, to be good enough, to have the right tools. Art doesn\'t wait for perfect. And neither should you.',
+    recs: [
+      'The Reset Immersion will break your perfectionism through messy, joyful practice',
+      'Our splatter painting experiences are literally designed to destroy perfectionism',
+      'Try the 5-Day Creative Reset Challenge in our Facebook community'
+    ],
+    cta: 'Explore The Reset Immersion',
+    ctaLink: 'coaching.html#immersion'
+  },
+  identity: {
+    type: 'The Lost Creative',
+    title: 'You\'ve forgotten who you are without the roles.',
+    desc: 'Mom. Professional. Partner. High-achiever. You\'ve been so many things for so long that somewhere you lost the thread back to yourself. Creativity isn\'t a hobby. It\'s a homecoming. And you\'re closer than you think.',
+    recs: [
+      'The Creative Catalyst VIP is designed specifically for this kind of deep reset',
+      'Start with the free quiz and community, then consider private coaching',
+      'The Art Regulation Lab offers tools for reconnecting with your emotional self'
+    ],
+    cta: 'Apply for Creative Catalyst VIP',
+    ctaLink: 'coaching.html#vip'
+  },
+  fear: {
+    type: 'The Brave Beginner',
+    title: 'Fear is the only thing between you and the art.',
+    desc: 'You want to create. You know it would change something in you. But the fear of being bad, of being judged, of wasting time keeps you frozen. Here\'s the truth: every artist starts exactly where you are.',
+    recs: [
+      'Our immersive experiences are a judgment-free zone, perfect for first steps',
+      'The Spark Collective community will show you you\'re never as alone as you feel',
+      'Take the 5-Day Creative Reset Challenge for low-stakes daily practice'
+    ],
+    cta: 'Book an Immersive Experience',
+    ctaLink: 'experiences.html'
+  }
+};
+
+let currentQ = 0;
+let answers = [];
+let scores = { burnout: 0, perfectionism: 0, identity: 0, fear: 0 };
+
+function startQuiz() {
+  document.getElementById('quizIntro').style.display = 'none';
+  document.getElementById('quizQuestions').style.display = 'block';
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = questions[currentQ];
+  document.getElementById('questionText').textContent = q.text;
+  document.getElementById('quizCounter').textContent = `Question ${currentQ + 1} of ${questions.length}`;
+  document.getElementById('progressFill').style.width = `${((currentQ) / questions.length) * 100}%`;
+
+  const keys = ['A', 'B', 'C', 'D'];
+  const container = document.getElementById('optionsContainer');
+  container.innerHTML = q.options.map((opt, i) => `
+    <button class="quiz-option ${answers[currentQ] === i ? 'selected' : ''}" onclick="selectOption(${i})">
+      <span class="quiz-option-key">${keys[i]}</span>
+      <span>${opt.text}</span>
+    </button>
+  `).join('');
+
+  document.getElementById('backBtn').style.display = currentQ > 0 ? '' : 'none';
+  document.getElementById('nextBtn').disabled = answers[currentQ] === undefined;
+  document.getElementById('nextBtn').textContent = currentQ === questions.length - 1 ? 'See My Results' : 'Next';
+}
+
+function selectOption(i) {
+  answers[currentQ] = i;
+  renderQuestion();
+}
+
+function nextQuestion() {
+  if (answers[currentQ] === undefined) return;
+
+  const opt = questions[currentQ].options[answers[currentQ]];
+  Object.entries(opt.scores).forEach(([k, v]) => { scores[k] += v; });
+
+  if (currentQ < questions.length - 1) {
+    currentQ++;
+    renderQuestion();
+  } else {
+    showResult();
+  }
+}
+
+function prevQuestion() {
+  if (currentQ > 0) {
+    // Undo last score
+    const opt = questions[currentQ].options[answers[currentQ]];
+    if (opt) Object.entries(opt.scores).forEach(([k, v]) => { scores[k] -= v; });
+    currentQ--;
+    renderQuestion();
+  }
+}
+
+function showResult() {
+  const topType = Object.entries(scores).sort((a, b) => b[1] - a[1])[0][0];
+  const result = results[topType];
+
+  document.getElementById('quizQuestions').style.display = 'none';
+  document.getElementById('quizResult').style.display = 'block';
+
+  document.getElementById('resultContent').innerHTML = `
+    <div style="width:64px;height:64px;background:var(--gold-light);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;">
+      <svg viewBox="0 0 36 36" fill="none" width="32"><path d="M10 24 Q18 8 26 24" stroke="var(--gold)" stroke-width="1.5" fill="none"/><circle cx="18" cy="14" r="3" fill="var(--gold)" opacity="0.7"/></svg>
+    </div>
+    <span class="result-type">${result.type}</span>
+    <h2 class="result-title">${result.title}</h2>
+    <p class="result-desc">${result.desc}</p>
+    <div class="result-recs">
+      <h4>Your next steps</h4>
+      <ul>${result.recs.map(r => `<li>${r}</li>`).join('')}</ul>
+    </div>
+    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+      <a href="${result.ctaLink}" class="btn btn-primary">${result.cta}</a>
+      <a href="mailto:hello@raicreates.com?subject=Quiz Result: ${encodeURIComponent(result.type)}" class="btn btn-ghost">Talk to Rai</a>
+    </div>
+    <p style="font-size:0.8rem;color:var(--text-faint);margin-top:1.5rem;">Want to go deeper? <a href="coaching.html" style="color:var(--gold);">Explore all programs</a></p>
+  `;
+}
+
+function resetQuiz() {
+  currentQ = 0;
+  answers = [];
+  scores = { burnout: 0, perfectionism: 0, identity: 0, fear: 0 };
+  document.getElementById('quizResult').style.display = 'none';
+  document.getElementById('quizIntro').style.display = 'block';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RaiCreates | Rediscover Yourself Through Art</title>
+  <meta name="description" content="RaiCreates is a transformative creative wellness brand helping women rediscover themselves through art, coaching, and immersive experiences. Join our community today." />
+  <meta name="keywords" content="creative wellness, art therapy, women coaching, burnout recovery, creative reset, art experiences, painting, coloring, RaiCreates" />
+  <meta name="author" content="RaiCreates" />
+  <meta property="og:title" content="RaiCreates | Rediscover Yourself Through Art" />
+  <meta property="og:description" content="Transformative art-based experiences and coaching for women who are ready to reconnect with themselves." />
+  <meta property="og:image" content="images/og-image.jpg" />
+  <meta property="og:url" content="https://raicreates.com" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="canonical" href="https://raicreates.com" />
+  <link rel="icon" href="images/favicon.svg" type="image/svg+xml" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&family=Playfair+Display:ital,wght@1,400&display=swap" rel="stylesheet" />
+
+  <!-- Stripe -->
+  <script src="https://js.stripe.com/v3/"></script>
+
+  <link rel="stylesheet" href="main.css" />
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "RaiCreates",
+    "description": "Art-based creative wellness coaching and immersive experiences for women",
+    "url": "https://raicreates.com",
+    "sameAs": [],
+    "serviceArea": "Charlotte, NC and Virtual",
+    "offers": [
+      { "@type": "Offer", "name": "The Spark Collective Membership" },
+      { "@type": "Offer", "name": "The Reset Immersion 12-Week Program" },
+      { "@type": "Offer", "name": "The Creative Catalyst VIP" }
+    ]
+  }
+  </script>
+</head>
+<body>
+
+<!-- ========== NAV ========== -->
+<nav class="nav" id="nav">
+  <a href="index.html" class="nav-logo">
+    <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="18" cy="18" r="17" stroke="var(--gold)" stroke-width="1.5"/>
+      <path d="M10 24 Q18 8 26 24" stroke="var(--gold)" stroke-width="1.5" fill="none"/>
+      <circle cx="18" cy="14" r="3" fill="var(--gold)" opacity="0.7"/>
+    </svg>
+    <span>RaiCreates</span>
+  </a>
+  <button class="nav-toggle" id="navToggle" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="index.html" class="active">Home</a></li>
+    <li><a href="coaching.html">Coaching</a></li>
+    <li><a href="experiences.html">Experiences</a></li>
+    <li><a href="gallery.html">Gallery</a></li>
+    <li><a href="quiz.html">Free Quiz</a></li>
+    <li><a href="challenges.html">Challenges</a></li>
+    <li><a href="shop.html" class="nav-cta">Shop</a></li>
+  </ul>
+</nav>
+
+<!-- ========== HERO ========== -->
+<section class="hero" id="hero">
+  <div class="hero-bg">
+    <div class="paint-blob blob-1"></div>
+    <div class="paint-blob blob-2"></div>
+    <div class="paint-blob blob-3"></div>
+    <div class="grain-overlay"></div>
+  </div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">Welcome to RaiCreates</p>
+    <h1 class="hero-title">
+      <span class="line">Art is how</span>
+      <em class="line italic-gold">you find</em>
+      <span class="line">your way back.</span>
+    </h1>
+    <p class="hero-sub">A creative wellness space for high-achieving women ready to exhale, express, and rediscover who they are.</p>
+    <div class="hero-actions">
+      <a href="quiz.html" class="btn btn-primary">Take the Free Quiz</a>
+      <a href="experiences.html" class="btn btn-ghost">Explore Experiences</a>
+    </div>
+  </div>
+  <div class="hero-scroll-hint">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ========== AS SEEN / SOCIAL PROOF ========== -->
+<section class="proof-bar">
+  <div class="container">
+    <p class="proof-label">Women transformed</p>
+    <div class="proof-stats">
+      <div class="stat"><span class="stat-num">500+</span><span class="stat-desc">Community Members</span></div>
+      <div class="stat-divider"></div>
+      <div class="stat"><span class="stat-num">12</span><span class="stat-desc">Week Reset Program</span></div>
+      <div class="stat-divider"></div>
+      <div class="stat"><span class="stat-num">3</span><span class="stat-desc">Coaching Paths</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== PILLARS ========== -->
+<section class="pillars section" id="pillars">
+  <div class="container">
+    <div class="section-header">
+      <p class="section-eyebrow">What We Offer</p>
+      <h2 class="section-title">Three paths, one destination: <em>you.</em></h2>
+    </div>
+    <div class="pillars-grid">
+      <a href="coaching.html" class="pillar-card" data-color="coral">
+        <div class="pillar-icon">
+          <svg viewBox="0 0 60 60" fill="none"><circle cx="30" cy="22" r="10" stroke="currentColor" stroke-width="1.5"/><path d="M10 50c0-11 9-18 20-18s20 7 20 18" stroke="currentColor" stroke-width="1.5"/><path d="M42 28c3 1 6 4 6 9" stroke="currentColor" stroke-width="1.5" stroke-dasharray="3 2"/></svg>
+        </div>
+        <h3>Coaching & Mentorship</h3>
+        <p>Private, group, and membership programs designed to help you break through creative blocks and burnout using art as the medicine.</p>
+        <span class="pillar-link">Explore Programs &rarr;</span>
+      </a>
+      <a href="experiences.html" class="pillar-card featured" data-color="gold">
+        <div class="pillar-badge">Most Popular</div>
+        <div class="pillar-icon">
+          <svg viewBox="0 0 60 60" fill="none"><path d="M10 45L25 20l10 15 8-10 7 20H10z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><circle cx="42" cy="15" r="5" stroke="currentColor" stroke-width="1.5"/></svg>
+        </div>
+        <h3>Immersive Art Experiences</h3>
+        <p>Splatter painting, interactive sculpture, and therapeutic creative sessions. Transform stress into art in a judgment-free space.</p>
+        <span class="pillar-link">See Experiences &rarr;</span>
+      </a>
+      <a href="gallery.html" class="pillar-card" data-color="sage">
+        <div class="pillar-icon">
+          <svg viewBox="0 0 60 60" fill="none"><rect x="8" y="12" width="44" height="36" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M8 28h44" stroke="currentColor" stroke-width="1" stroke-dasharray="4 3"/><rect x="16" y="18" width="12" height="8" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="32" y="18" width="12" height="8" rx="1" stroke="currentColor" stroke-width="1.2"/></svg>
+        </div>
+        <h3>Virtual Art Gallery</h3>
+        <p>Browse and purchase original art from me and our community. View in our immersive VR gallery from anywhere in the world.</p>
+        <span class="pillar-link">Enter Gallery &rarr;</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ========== ABOUT STRIP ========== -->
+<section class="about-strip section">
+  <div class="about-strip-inner">
+    <div class="about-strip-text">
+      <p class="section-eyebrow">The Woman Behind the Brand</p>
+      <h2>Art saved me. <br/><em>Now I help it save you.</em></h2>
+      <p>I'm a Charlotte-based interior designer, certified scrum master, and creative coach. After years of high-achievement and burnout, I discovered that picking up a paintbrush was the thing that finally made me feel like myself again.</p>
+      <p>RaiCreates exists because every high-functioning woman deserves a space to make a mess, exhale, and come home to herself.</p>
+    </div>
+    <div class="about-strip-visual">
+      <div class="paint-frame">
+        <div class="paint-frame-inner">
+          <div class="paint-swatch s1"></div>
+          <div class="paint-swatch s2"></div>
+          <div class="paint-swatch s3"></div>
+          <div class="paint-circle"></div>
+          <p class="paint-quote">"Creativity is not a talent. It's a way of operating."</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== PROGRAMS HIGHLIGHT ========== -->
+<section class="programs section" id="programs">
+  <div class="container">
+    <div class="section-header centered">
+      <p class="section-eyebrow">The Creative Reset Suite</p>
+      <h2>Your transformation, your timeline.</h2>
+      <p class="section-desc">Whether you need a community, a container, or a complete overhaul, there's a program for where you are right now.</p>
+    </div>
+    <div class="programs-list">
+
+      <div class="program-row">
+        <div class="program-tag">Community</div>
+        <div class="program-info">
+          <h3>The Spark Collective</h3>
+          <p>Monthly membership with live workshops, a private community, and creative prompts to keep you in the creative flow all month long.</p>
+        </div>
+        <div class="program-price">
+          <span class="price">$47</span>
+          <span class="price-period">/mo</span>
+        </div>
+        <a href="coaching.html#spark" class="btn btn-sm">Join Now</a>
+      </div>
+
+      <div class="program-row featured-row">
+        <div class="program-tag gold-tag">Signature</div>
+        <div class="program-info">
+          <h3>The Reset Immersion</h3>
+          <p>12 weeks of live group coaching using art and creativity to move through burnout, reclaim your identity, and build a sustainable creative practice.</p>
+        </div>
+        <div class="program-price">
+          <span class="price">$1,200</span>
+          <span class="price-period">full</span>
+        </div>
+        <a href="coaching.html#immersion" class="btn btn-sm btn-gold">Apply</a>
+      </div>
+
+      <div class="program-row">
+        <div class="program-tag">Private</div>
+        <div class="program-info">
+          <h3>Creative Catalyst VIP</h3>
+          <p>3 months of private coaching for women ready for a deep, personalized reset. Includes 1:1 sessions, custom creative frameworks, and direct access to Rai.</p>
+        </div>
+        <div class="program-price">
+          <span class="price">$3,000</span>
+          <span class="price-period">full</span>
+        </div>
+        <a href="coaching.html#vip" class="btn btn-sm">Apply</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ========== QUIZ CTA ========== -->
+<section class="quiz-cta section">
+  <div class="quiz-cta-inner">
+    <div class="quiz-cta-decor">
+      <div class="quiz-blob"></div>
+    </div>
+    <div class="quiz-cta-content">
+      <p class="section-eyebrow">Start Here</p>
+      <h2>Not sure where to begin? <em>Take the quiz.</em></h2>
+      <p>In 2 minutes, discover which creative block is holding you back and get a personalized path forward.</p>
+      <a href="quiz.html" class="btn btn-primary btn-lg">Take the Free Creative Block Quiz</a>
+    </div>
+  </div>
+</section>
+
+<!-- ========== TESTIMONIALS ========== -->
+<section class="testimonials section" id="testimonials">
+  <div class="container">
+    <div class="section-header centered">
+      <p class="section-eyebrow">Community Love</p>
+      <h2>Real women. Real resets.</h2>
+    </div>
+    <div class="testimonials-grid">
+      <div class="testi-card">
+        <div class="testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <p>"I hadn't picked up a paintbrush in 15 years. After one session with Rai, I remembered who I was before the corporate grind took over."</p>
+        <div class="testi-author">
+          <div class="testi-avatar" style="background:var(--coral-light)">J</div>
+          <div><strong>Jessica M.</strong><span>Marketing Director</span></div>
+        </div>
+      </div>
+      <div class="testi-card featured-testi">
+        <div class="testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <p>"The Reset Immersion was the most transformative experience of my adult life. I came in burned out and left with a creative practice that is now non-negotiable."</p>
+        <div class="testi-author">
+          <div class="testi-avatar" style="background:var(--sage-light)">T</div>
+          <div><strong>Tamara R.</strong><span>Reset Immersion Graduate</span></div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <p>"The Spark Collective is the one subscription I will never cancel. It's the pocket of joy I didn't know I was missing."</p>
+        <div class="testi-author">
+          <div class="testi-avatar" style="background:var(--gold-light)">A</div>
+          <div><strong>Aisha K.</strong><span>Spark Collective Member</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== NEWSLETTER ========== -->
+<section class="newsletter section">
+  <div class="container">
+    <div class="newsletter-card">
+      <div class="newsletter-text">
+        <h3>Join the Creative Reset Community</h3>
+        <p>Free creativity prompts, early access to events, and love notes from me, delivered to your inbox.</p>
+      </div>
+      <form class="newsletter-form" id="newsletterForm" onsubmit="handleNewsletterSubmit(event)">
+        <input type="email" placeholder="Your email address" required class="newsletter-input" />
+        <button type="submit" class="btn btn-primary">Subscribe Free</button>
+      </form>
+      <p class="newsletter-fine">No spam. Just art, intention, and you.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ========== FOOTER ========== -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="index.html" class="nav-logo footer-logo">
+          <svg width="30" height="30" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="18" r="17" stroke="var(--gold)" stroke-width="1.5"/><path d="M10 24 Q18 8 26 24" stroke="var(--gold)" stroke-width="1.5" fill="none"/><circle cx="18" cy="14" r="3" fill="var(--gold)" opacity="0.7"/></svg>
+          <span>RaiCreates</span>
+        </a>
+        <p>Helping women rediscover themselves through the transformative power of art and creative expression.</p>
+      </div>
+      <div class="footer-links">
+        <div class="footer-col">
+          <h4>Explore</h4>
+          <ul>
+            <li><a href="coaching.html">Coaching</a></li>
+            <li><a href="experiences.html">Experiences</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Community</h4>
+          <ul>
+            <li><a href="quiz.html">Free Quiz</a></li>
+            <li><a href="challenges.html">Challenges</a></li>
+            <li><a href="shop.html">Shop</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Follow Along</h4>
+          <ul>
+            <li><a href="#" target="_blank">Instagram</a></li>
+            <li><a href="https://www.facebook.com/share/g/14cGBqJdJiS/" target="_blank">Facebook Community</a></li>
+            <li><a href="#" target="_blank">Pinterest</a></li>
+            <li><a href="#" target="_blank">TikTok</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2025 RaiCreates. All rights reserved. &bull; Virtual Programs Worldwide</p>
+      <div class="footer-legal">
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="terms.html">Terms</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="main.js"></script>
+</body>
+</html>
