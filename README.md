@@ -1,3 +1,25 @@
+# ⚠️ IMPORTANT: Fix for unstyled site on GitHub Pages
+
+If your site looks like plain black text with no styling, the fix is one of these:
+
+## Option A — Rename your GitHub repo (RECOMMENDED, 2 min fix)
+1. Go to your GitHub repo → Settings
+2. Rename the repo to: `YOUR_GITHUB_USERNAME.github.io`
+   (e.g. if your username is `miacreates`, name it `miacreates.github.io`)
+3. Go to Settings → Pages → set Source to `main` branch
+4. Your site will publish at `https://YOUR_USERNAME.github.io/` and all styles will work
+
+## Option B — Connect your custom domain
+1. In your domain registrar (GoDaddy, Namecheap etc), add these DNS A records:
+   - 185.199.108.153
+   - 185.199.109.153  
+   - 185.199.110.153
+   - 185.199.111.153
+2. In GitHub repo → Settings → Pages → Custom domain → enter `raicreates.com`
+3. Wait 10-30 min for DNS to propagate — styles will work once domain is live
+
+---
+
 # RaiCreates Website
 
 A full multi-page website for RaiCreates — the creative wellness brand by Rai.
